@@ -3,6 +3,11 @@ options {
 	caseInsensitive = true;
 }
 
+tokens {
+      
+	IDENTIFIER,
+	STRING
+}
 // keywords
 ADD: 'ADD';
 ALL: 'ALL';
@@ -262,16 +267,48 @@ fragment BITFrag: [01];
 
 MONEY_LITERAL: [$\u00A2\u00A3\u00A4\u00A5] NUMBER_LITERAL;
 
-HEX_LITERAL: '0' 'X' ( NEW_LINE_STRING+ HEX_REP+)*;
+HEX_LITERAL: ('0' 'X' ( NEW_LINE_STRING | HEX_REP)+) {
+raw = self.text
+# Remove \r and \n that come after backslash
+raw = raw.replace("\\\r\n", "")
+raw = raw.replace("\\\n", "")
+raw = raw.replace("\\\r", "")
+if raw[-1] in ['x', 'X']:
+		raw.append('0')
+self.text = raw
+      };
 
 fragment HEX_REP: [0-9A-F];
 fragment NEW_LINE_STRING: '\\' '\r'? '\n';
 
 STRING_LITERAL:
-	SINGLE_QUOTE (ESCAPED_QUOTE | NEW_LINE_STRING | ~['\r\n])* SINGLE_QUOTE;
+	(
+		SINGLE_QUOTE (ESCAPED_QUOTE | NEW_LINE_STRING | ~['\r\n])* SINGLE_QUOTE
+	) {
+        raw = self.text
+        # Remove the first and last quote
+        raw = raw[1:-1]
+        # Replace doubled single quotes with one single quote
+        raw = raw.replace("''", "'")
+        # Remove \r and \n that come after backslash
+        raw = raw.replace("\\\r\n", "")  # Windows line ending
+        raw = raw.replace("\\\n", "")    # Unix line ending
+        raw = raw.replace("\\\r", "")    # Old Mac line ending
+        self.text = raw
+      };
 
-UNICODE_STRING_LITERAL:
-	'N' SINGLE_QUOTE (ESCAPED_QUOTE | NEW_LINE_STRING | ~['])* SINGLE_QUOTE;
+UNICODE_STRING_LITERAL: ('N' STRING_LITERAL){
+        raw = self.text
+        # Remove the N , first and last quote
+        raw = raw[2:-1]
+        # Replace doubled single quotes with one single quote
+        raw = raw.replace("''", "'")
+        # Remove \r and \n that come after backslash
+        raw = raw.replace("\\\r\n", "")  # Windows line ending
+        raw = raw.replace("\\\n", "")    # Unix line ending
+        raw = raw.replace("\\\r", "")    # Old Mac line ending
+        self.text = raw
+      };
 
 fragment SINGLE_QUOTE: '\'';
 fragment ESCAPED_QUOTE: '\'\'';
