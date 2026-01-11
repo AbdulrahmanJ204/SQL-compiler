@@ -5,9 +5,13 @@ options {
 
 tokens {
 	IDENTIFIER,
-	STRING
+	LITERAL,
+	OPERATOR
 }
-// keywords
+
+//! ╔══════════════════════════════════╗
+//! ║━━━━━━━━━━━━<KEYWORDS>━━━━━━━━━━━━║
+//! ╚══════════════════════════════════╝
 ADD: 'ADD';
 ALL: 'ALL';
 ALTER: 'ALTER';
@@ -156,12 +160,9 @@ SAVE: 'SAVE';
 SCHEMA: 'SCHEMA';
 SELECT: 'SELECT';
 SEMANTICKEYPHRASETABLE: 'SEMANTICKEYPHRASETABLE';
-
 SEMANTICSIMILARITYDETAILSTABLE:
 	'SEMANTICSIMILARITYDETAILSTABLE';
-
 SEMANTICSIMILARITYTABLE: 'SEMANTICSIMILARITYTABLE';
-
 SESSION_USER: 'SESSION_USER';
 SET: 'SET';
 SETUSER: 'SETUSER';
@@ -222,9 +223,6 @@ ROLLUP: 'ROLLUP';
 ROW: 'ROW';
 ROWS: 'ROWS';
 WINDOW: 'WINDOW';
-// : ' ';
-
-// : '//';
 BIGINT: 'BIGINT';
 BINARY: 'BINARY';
 BIT: 'BIT';
@@ -248,34 +246,34 @@ VARBINARY: 'VARBINARY';
 VARCHAR: 'VARCHAR';
 XML: 'XML';
 
-// literals
-
+//! ╔══════════════════════════════════╗
+//! ║━━━━━━━━━━━━<LITERALs>━━━━━━━━━━━━║
+//! ╚══════════════════════════════════╝
 NUMBER_LITERAL:
-	(DIGIT+ ( '.' DIGIT*)? | '.' DIGIT+) ('E' [+\-]? DIGIT+)?;
+	(DIGIT+ ( '.' DIGIT*)? | '.' DIGIT+) ('E' [+\-]? DIGIT+)? -> type(LITERAL);
 
-//  Boolean
-TRUE: 'TRUE';
-FALSE: 'FALSE';
+TRUE: 'TRUE' -> type(LITERAL);
+FALSE: 'FALSE' -> type(LITERAL);
 
-// 0bvalue BIT_LITERAL: '0b' BITFrag+ ;
-
-// [bB]'value'
-BIT_STRING_LITERAL: 'B' SINGLE_QUOTE BITFrag+ SINGLE_QUOTE;
+BIT_STRING_LITERAL:
+	'B' SINGLE_QUOTE BITFrag+ SINGLE_QUOTE -> type(LITERAL);
 
 fragment BITFrag: [01];
 
-MONEY_LITERAL: [$\u00A2\u00A3\u00A4\u00A5] NUMBER_LITERAL;
+MONEY_LITERAL:
+	[$\u00A2\u00A3\u00A4\u00A5] NUMBER_LITERAL -> type(LITERAL);
 
-HEX_LITERAL: ('0' 'X' (( NEW_LINE_STRING | HEX_REP)+ |)) {
-raw = self.text
-# Remove \r and \n that come after backslash
-raw = raw.replace("\\\r\n", "")
-raw = raw.replace("\\\n", "")
-raw = raw.replace("\\\r", "")
-if raw[-1] in ['x', 'X']:
-      raw+="0"
-self.text = raw
-      };
+HEX_LITERAL: ('0' 'X' (( NEW_LINE_STRING | HEX_REP)+ |)) -> type(LITERAL);
+// {
+//       raw = self.text
+//       # Remove \r and \n that come after backslash
+//       raw = raw.replace("\\\r\n", "")
+//       raw = raw.replace("\\\n", "")
+//       raw = raw.replace("\\\r", "")
+//       if raw[-1] in ['x', 'X']:
+//             raw+="0"
+//       self.text = raw
+// };
 
 fragment HEX_REP: [0-9A-F];
 fragment NEW_LINE_STRING: '\\' '\r'? '\n';
@@ -283,61 +281,70 @@ fragment NEW_LINE_STRING: '\\' '\r'? '\n';
 STRING_LITERAL:
 	(
 		SINGLE_QUOTE (ESCAPED_QUOTE | NEW_LINE_STRING | ~['\r\n])* SINGLE_QUOTE
-	) {
-        raw = self.text
-        # Remove the first and last quote
-        raw = raw[1:-1]
-        # Replace doubled single quotes with one single quote
-        raw = raw.replace("''", "'")
-        # Remove \r and \n that come after backslash
-        raw = raw.replace("\\\r\n", "")  # Windows line ending
-        raw = raw.replace("\\\n", "")    # Unix line ending
-        raw = raw.replace("\\\r", "")    # Old Mac line ending
-        self.text = raw
-      };
+	);
+// {
+//   raw = self.text
+//   # Remove the first and last quote
+//   raw = raw[1:-1]
+//   # Replace doubled single quotes with one single quote
+//   raw = raw.replace("''", "'")
+//   # Remove \r and \n that come after backslash
+//   raw = raw.replace("\\\r\n", "")  # Windows line ending
+//   raw = raw.replace("\\\n", "")    # Unix line ending
+//   raw = raw.replace("\\\r", "")    # Old Mac line ending
+//   self.text = raw
+// };
 
-UNICODE_STRING_LITERAL: ('N' STRING_LITERAL) {
-        raw = self.text
-        # Remove the N , first and last quote
-        raw = raw[2:-1]
-        # Replace doubled single quotes with one single quote
-        raw = raw.replace("''", "'")
-        # Remove \r and \n that come after backslash
-        raw = raw.replace("\\\r\n", "")  # Windows line ending
-        raw = raw.replace("\\\n", "")    # Unix line ending
-        raw = raw.replace("\\\r", "")    # Old Mac line ending
-        self.text = raw
-      };
+UNICODE_STRING_LITERAL: ('N' STRING_LITERAL);
+//  {
+//         raw = self.text
+//         # Remove the N , first and last quote
+//         raw = raw[2:-1]
+//         # Replace doubled single quotes with one single quote
+//         raw = raw.replace("''", "'")
+//         # Remove \r and \n that come after backslash
+//         raw = raw.replace("\\\r\n", "")  # Windows line ending
+//         raw = raw.replace("\\\n", "")    # Unix line ending
+//         raw = raw.replace("\\\r", "")    # Old Mac line ending
+//         self.text = raw
+//       };
 
 fragment SINGLE_QUOTE: '\'';
 fragment ESCAPED_QUOTE: '\'\'';
 
-// IDENTIFIERS 
-UNQUOTED_IDENTIFIER: IDENTIFIER_START IDENTIFIER_REST*;
+//! ╔═════════════════════════════════╗
+//! ║━━━━━━━━━━<IDENTIFIERs>━━━━━━━━━━║
+//! ╚═════════════════════════════════╝
+UNQUOTED_IDENTIFIER:
+	IDENTIFIER_START IDENTIFIER_REST* -> type(IDENTIFIER);
+BRACKET_IDENTIFIER:
+	'[' (~[\]\r\n] | ']]')* ']' -> type(IDENTIFIER);
+DOUBLE_QUOTED_IDENTIFIER:
+	'"' ('""' | ~["\r\n])* '"' -> type(IDENTIFIER);
 
-BRACKET_IDENTIFIER: '[' ( ~[\]\r\n] | ']]')* ']';
-
-DOUBLE_QUOTED_IDENTIFIER: '"' ( '""' | ~["\r\n])* '"';
-
+//! ╔═════════════════════════════════╗
+//! ║━━━━━━━━━━━<VARIABLEs>━━━━━━━━━━━║
+//! ╚═════════════════════════════════╝
 USER_VARIABLE: '@' IDENTIFIER_START IDENTIFIER_REST*;
 SYSTEM_VARIABLE: '@@' IDENTIFIER_START IDENTIFIER_REST*;
-
 fragment IDENTIFIER_START: [a-z_#];
 fragment IDENTIFIER_REST: [a-z0-9_#@$];
-// 5. Operators and Punctuation
 
+//! ╔══════════════════════════════════════════════════╗
+//! ║━━━━━━━━━━━<OPERATORs AND PUNCTUATIONs>━━━━━━━━━━━║
+//! ╚══════════════════════════════════════════════════╝
 SEMI: ';';
 COMMA: ',';
 DOT: '.';
 LPAREN: '(';
 RPAREN: ')';
 
-EQ: '=';
-NEQ: '!=' | '<>';
-LTE: '<=';
-GTE: '>=';
-LT: '<';
-GT: '>';
+EQ: '=' -> type(OPERATOR);
+NEQ: ('!=' | '<>') -> type(OPERATOR);
+LTE: '<=' -> type(OPERATOR);
+GTE: '>=' -> type(OPERATOR);
+LT: '<' -> type(OPERATOR);
+GT: '>' -> type(OPERATOR);
 
 MINUS: '-';
 STAR: '*';
@@ -355,19 +362,16 @@ AMPERSAND: '&';
 PIPE: '|';
 CARET: '^';
 
-// Comments and Whitespace
-
+//! ╔═══════════════════════════════════════════════╗
+//! ║━━━━━━━━━━━<COMMENTs AND WHITESPACE>━━━━━━━━━━━║
+//! ╚═══════════════════════════════════════════════╝
 WS: [ \t\r\n]+ -> skip;
-
 LINE_COMMENT: '--' ~[\r\n]* -> skip;
-
 BLOCK_COMMENT_START:
 	'/*' -> skip, pushMode(BLOCK_COMMENT_MODE);
-
 fragment DIGIT: [0-9];
 
 mode BLOCK_COMMENT_MODE;
-
 BLOCK_COMMENT_START_NESTED:
 	'/*' -> skip, pushMode(BLOCK_COMMENT_MODE);
 
