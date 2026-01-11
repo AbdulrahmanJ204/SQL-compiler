@@ -7,7 +7,7 @@ options {
 import BasicParser;
 
 select_statement:
-	SELECT select_list FROM table_source where_clause? SEMI?;
+	SELECT top_clause? select_list FROM table_source where_clause? SEMI?;
 
 select_list: STAR | select_list_element (COMMA select_list_element)*;
 
