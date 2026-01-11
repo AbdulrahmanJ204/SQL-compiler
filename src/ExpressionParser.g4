@@ -37,5 +37,6 @@ mul_div_expression:
 primary_expression:
 	LPAREN expression RPAREN
 	| full_column_name
+	| function_call
 	| LITERAL| NULL| USER_VARIABLE|derived_table;
 

@@ -5,7 +5,7 @@ options {
 
 import BasicParser;
 update_statement :
-UPDATE full_table_name SET assignment_list (FROM? table_source)? where_clause? SEMI? ;
+UPDATE top_clause? full_table_name SET assignment_list (FROM? table_source)? where_clause? SEMI? ;
 
 assignment_list: assignment (COMMA assignment)*;
 

@@ -8,8 +8,7 @@ import BasicParser;
 import SelectParser;
 
 insert_statement:
-	INSERT 
-	top_clause?
+	INSERT
 	INTO?
 	full_table_name
 	column_list?

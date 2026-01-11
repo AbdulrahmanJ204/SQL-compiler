@@ -201,7 +201,6 @@ WITH: 'WITH';
 WITHIN_GROUP: 'WITHIN_GROUP';
 WRITETEXT: 'WRITETEXT';
 CAST: 'CAST';
-COUNT: 'COUNT';
 CUBE: 'CUBE';
 CURRENT_SCHEMA: 'CURRENT_SCHEMA';
 DATETIME: 'DATETIME';
@@ -246,6 +245,7 @@ UNIQUEIDENTIFIER: 'UNIQUEIDENTIFIER';
 VARBINARY: 'VARBINARY';
 VARCHAR: 'VARCHAR';
 XML: 'XML';
+NEXT: 'NEXT';
 
 //! ╔══════════════════════════════════╗
 //! ║━━━━━━━━━━━━<LITERALs>━━━━━━━━━━━━║
@@ -352,7 +352,6 @@ STAR: '*';
 SLASH: '/';
 PLUS: '+';
 PERCENT_OP: '%';
-
 PLUS_EQ: '+=';
 MINUS_EQ: '-=';
 STAR_EQ: '*=';
