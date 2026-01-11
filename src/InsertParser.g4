@@ -7,14 +7,12 @@ options {
 import BasicParser;
 import SelectParser;
 
-output_clause:;
 insert_statement:
 	INSERT 
 	top_clause?
 	INTO?
 	table_source 
 	column_list?
-	output_clause?
 	insert_source SEMI?;
 
 
