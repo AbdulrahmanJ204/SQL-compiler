@@ -5,10 +5,10 @@ options {
 
 import BasicParser;
 update_statement :
-UPDATE table_source SET assignment (COMMA assignment)* from_update_clause where_clause? SEMI? ;
+UPDATE table_source SET assignment (COMMA assignment)* from_update_clause? where_clause? SEMI? ;
 
 assignment :
-	target EQ source ;
+	target OPERATOR source ;
 
 target
     : column
