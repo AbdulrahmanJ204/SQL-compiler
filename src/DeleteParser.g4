@@ -6,9 +6,18 @@ options {
 
 import BasicParser;
 delete_statement
-    : DELETE top_clause? FROM? table_source where_clause? SEMI?
+    : DELETE top_clause? FROM? delete_target delete_from_extension? where_clause? SEMI?
     ;
 
 top_clause
     : TOP LPAREN add_sub_expression RPAREN PERCENT?
+    ;
+  
+delete_target
+    : table_source (AS? IDENTIFIER)?
+    | IDENTIFIER
+    ;
+
+delete_from_extension
+    : FROM joined_table_source
     ;
