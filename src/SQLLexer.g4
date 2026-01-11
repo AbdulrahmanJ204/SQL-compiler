@@ -360,17 +360,7 @@ CARET: '^';
 WS: [ \t\r\n]+ -> skip;
 
 LINE_COMMENT: '--' ~[\r\n]* -> skip;
+BLOCK_COMMENT: '/*' (BLOCK_COMMENT | .)*? '*/' -> skip;
 
-BLOCK_COMMENT_START:
-	'/*' -> skip, pushMode(BLOCK_COMMENT_MODE);
 
 fragment DIGIT: [0-9];
-
-mode BLOCK_COMMENT_MODE;
-
-BLOCK_COMMENT_START_NESTED:
-	'/*' -> skip, pushMode(BLOCK_COMMENT_MODE);
-
-BLOCK_COMMENT_END: '*/' -> skip, popMode;
-
-BLOCK_COMMENT_CONTENT: . -> skip;
