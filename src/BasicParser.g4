@@ -17,3 +17,5 @@ table_source: full_table_name as_alias?;
 as_alias: AS? IDENTIFIER;
 
 full_table_name: IDENTIFIER (DOT IDENTIFIER)*;
+column: IDENTIFIER;
+column_list : LPAREN column (COMMA column)* RPAREN;
