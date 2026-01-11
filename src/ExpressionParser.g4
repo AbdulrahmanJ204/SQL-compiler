@@ -17,7 +17,13 @@ predicate_expression:
 	LPAREN search_condition RPAREN
 	| predicate;
 
-predicate: expression (OPERATOR expression)*;
+predicate
+    : add_sub_expression (OPERATOR add_sub_expression)*
+    | full_column_name BETWEEN add_sub_expression AND add_sub_expression
+    | full_column_name IS NULL
+    | full_column_name IS NOT NULL
+    | full_column_name IN LPAREN expression (COMMA expression)* RPAREN
+    ;
 
 expression: add_sub_expression;
 
