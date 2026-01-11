@@ -23,4 +23,9 @@ arth_paren_expression:
 	LPAREN add_sub_expression RPAREN
 	| expression;
 
-expression: (IDENTIFIER | LITERAL);
+expression: (qualified_name | LITERAL);
+ 
+qualified_name
+    : IDENTIFIER (DOT IDENTIFIER)*
+    ;
+ 

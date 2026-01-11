@@ -281,7 +281,7 @@ fragment NEW_LINE_STRING: '\\' '\r'? '\n';
 STRING_LITERAL:
 	(
 		SINGLE_QUOTE (ESCAPED_QUOTE | NEW_LINE_STRING | ~['\r\n])* SINGLE_QUOTE
-	);
+	)-> type(LITERAL);
 // {
 //   raw = self.text
 //   # Remove the first and last quote
@@ -295,7 +295,7 @@ STRING_LITERAL:
 //   self.text = raw
 // };
 
-UNICODE_STRING_LITERAL: ('N' STRING_LITERAL);
+UNICODE_STRING_LITERAL: ('N' STRING_LITERAL)-> type(LITERAL);
 //  {
 //         raw = self.text
 //         # Remove the N , first and last quote
