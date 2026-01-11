@@ -8,9 +8,23 @@ import ExpressionParser;
 
 where_clause: WHERE search_condition;
 
-join_clause: INNER? JOIN table_source ON search_condition;
+join_clause: join_type JOIN table_source_item join_condition;
 
-table_source: full_table_name as_alias?;
+join_condition: ON search_condition;
+
+join_type: INNER?
+    | LEFT OUTER?
+    | RIGHT OUTER?
+    | FULL OUTER?
+    | CROSS
+    ;
+
+table_source: table_source_item join_clause*;
+table_source_item
+    : full_table_name as_alias?
+    ;
+
+
 
 as_alias: AS? IDENTIFIER;
 
