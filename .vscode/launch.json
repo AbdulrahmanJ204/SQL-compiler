@@ -1,0 +1,50 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run Python Parser (current file + tokens)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",
+            "args": [
+                "${file}",
+                "--tokens"
+            ],
+            "preLaunchTask": "Generate ANTLR Python Files",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Run Python Parser (test.sql)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",
+            "args": [
+                "${workspaceFolder}/tests/test.sql",
+                "--tokens"
+            ],
+            "preLaunchTask": "Generate ANTLR Python Files",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Run Java TestRig (grun GUI)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",
+            "args": [],
+            "preLaunchTask": "Run ANTLR TestRig (grun)",
+            "console": "integratedTerminal",
+            "stopOnEntry": false
+        },
+        {
+            "name": "Full Workflow: Generate + Run Python",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",
+            "args": [
+                "--tokens"
+            ],
+            "preLaunchTask": "Generate ANTLR Python Files",
+            "console": "internalConsole"
+        }
+    ]
+}

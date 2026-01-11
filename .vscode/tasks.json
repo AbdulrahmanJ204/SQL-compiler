@@ -1,0 +1,104 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Generate ANTLR Java Files",
+            "type": "shell",
+            "command": "antlr",
+            "args": [
+                "-Dlanguage=Java",
+                "-package",
+                "generated",
+                "-o",
+                "src/generated",
+                "${workspaceFolder}/src/SQLLexer.g4",
+                "${workspaceFolder}/src/SQLParser.g4"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Generate ANTLR Python Files",
+            "type": "shell",
+            "command": "antlr",
+            "args": [
+                "-Dlanguage=Python3",
+                "-o",
+                "src/generated",
+                "${workspaceFolder}/src/SQLLexer.g4",
+                "${workspaceFolder}/src/SQLParser.g4"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Compile Java Files",
+            "type": "shell",
+            "command": "javac",
+            "args": [
+                "src/generated/*.java"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "dependsOn": ["Generate ANTLR Java Files"]
+        },
+        {
+            "label": "Run ANTLR TestRig (grun)",
+            "type": "shell",
+            "command": "grun.bat",
+            "args": [
+                "generated.SQL",
+                "tsql_file",
+                "tests/test.sql",
+                "-gui"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel":"shared"
+            },
+            "problemMatcher": [],
+            "dependsOn": ["Compile Java Files"]
+        },
+        {
+            "label": "Generate All (Python + Java)",
+            "dependsOn": [
+                "Generate ANTLR Python Files",
+                "Compile Java Files"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Full Build and Test",
+            "dependsOn": [
+                "Generate ANTLR Python Files",
+                "Run ANTLR TestRig (grun)"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        }
+    ]
+}

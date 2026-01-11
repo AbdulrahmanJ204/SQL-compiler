@@ -3,6 +3,5 @@ __pycache__/
 *.py[cod]
 *$py.class
 .antlr/
-.vscode
 .antlr
 .history
