@@ -4,6 +4,8 @@ options {
 	tokenVocab = SQLLexer;
 }
 
+import BasicParser;
+
 search_condition: or_expression;
 
 or_expression: and_expression (OR and_expression)*;
@@ -26,8 +28,7 @@ mul_div_expression:
 	primary_expression ((STAR | SLASH) primary_expression)*;
 
 primary_expression:
-	LPAREN add_sub_expression RPAREN
-	| qualified_name
+	LPAREN expression RPAREN
+	| full_column_name
 	| LITERAL;
 
-qualified_name: IDENTIFIER (DOT IDENTIFIER)*;
