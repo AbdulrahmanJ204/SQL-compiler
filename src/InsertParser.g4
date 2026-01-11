@@ -21,4 +21,4 @@ column_list : LPAREN column (COMMA column)* RPAREN;
 insert_source : values_source | select_statement;
 values_source: VALUES values_list (COMMA values_list)*;
 values_list :LPAREN value (COMMA value)* RPAREN ;
-value : IDENTIFIER | NULL;
+value : LITERAL |IDENTIFIER | NULL;

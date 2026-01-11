@@ -10,7 +10,7 @@ param(
 
 $SrcDir = "src"
 $GenDir = "src/generated"
-$TestsDir = "tests"
+$TestsDir = ""
 
 function Write-Success { Write-Host $args -ForegroundColor Green }
 function Write-Info { Write-Host $args -ForegroundColor Yellow }
@@ -48,11 +48,11 @@ Write-Success "✓ Parser generated successfully`n"
 
 if ([string]::IsNullOrEmpty($TestName)) {
     Write-Info "No test file specified. Build complete."
-    Write-Host "Usage: .\cp.ps1 <test_name> [-ShowTokens]"
+    Write-Host "Usage: .\compile.ps1 <test_name> [-ShowTokens]"
     exit 0
 }
 
-$testFile = Join-Path $TestsDir "$TestName.sql"
+$testFile = $TestName
 
 if (-not (Test-Path $testFile)) {
     Write-Error "✗ Test file not found: $testFile"

@@ -1,1 +1,2 @@
-.\compile.ps1 test
+
+Usage: .\compile.ps1 <test_name> [-ShowTokens]
