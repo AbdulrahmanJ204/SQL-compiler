@@ -72,10 +72,33 @@ function_arguments
     ;
 
 column_type
-    : type_name type_length? nullability?;
+    : datatype type_length? nullability?;
 
-type_name
-    : full_table_name;
+datatype
+    : full_table_name
+    | INT
+    | BIGINT
+    | SMALLINT
+    | TINYINT
+    | DECIMAL
+    | NUMERIC
+    | FLOAT
+    | REAL
+    | BIT
+    | CHAR
+    | NCHAR
+    | VARCHAR
+    | NVARCHAR
+    | TEXT
+    | NTEXT
+    | DATE
+    | DATETIME
+    | DATETIME2
+    | DATETIMEOFFSET
+    | TIME
+    | BINARY
+    | VARBINARY
+    ;
 
 type_length
     : LPAREN expression (COMMA expression)? RPAREN ;
@@ -120,7 +143,7 @@ function_parameter_list
     : function_parameter (COMMA function_parameter)*;
 
 function_parameter
-    : USER_VARIABLE type_name type_length? (NULL | NOT NULL)? (EQ default_value)?;
+    : USER_VARIABLE datatype type_length? (NULL | NOT NULL)? (EQ default_value)?;
 
 default_value
     : LITERAL
