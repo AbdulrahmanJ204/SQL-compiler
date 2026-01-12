@@ -19,12 +19,20 @@ predicate_expression:
 	| predicate;
 
 predicate
-    : expression (operators expression)*
-    | full_column_name BETWEEN expression AND expression
-    | full_column_name IS NULL
-    | full_column_name IS NOT NULL
-    | full_column_name IN LPAREN expression (COMMA expression)* RPAREN
+    : comparison_predicate
+    | in_predicate
+    | between_predicate
+    | like_predicate
+    | null_predicate
+    | exists_predicate
     ;
+comparison_predicate: expression (operators expression)*;
+in_predicate:expression NOT? IN LPAREN in_list RPAREN;
+in_list: expression (COMMA expression)*;
+between_predicate: expression NOT? BETWEEN expression AND expression ;
+like_predicate: expression NOT? LIKE expression ;
+null_predicate:expression IS NOT? NULL;
+exists_predicate:NOT? EXISTS derived_table ;
 
 expression: add_sub_expression;
 
