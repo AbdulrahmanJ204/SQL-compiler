@@ -1,0 +1,8 @@
+ALTER TABLE Sales.Orders
+    ALTER COLUMN OrderDate DATETIME2 NOT NULL;
+
+ALTER TABLE Sales.Orders
+    ADD Discount DECIMAL(5,2) NULL;
+
+ALTER TABLE Sales.Orders
+    ADD CONSTRAINT PK_Orders PRIMARY KEY (OrderID);

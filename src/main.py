@@ -51,7 +51,7 @@ def _to_string_tree_traverse(tree, builder, symbolic_lexer_names, token_delimite
                 child_list_stack.append(children)
 
 
-DEFAULT_TEST_FILE = "tests/only_test.sql"
+DEFAULT_TEST_FILE = "tests/delete_test.sql"
 
 def main():
     parser_cli = argparse.ArgumentParser(description="T-SQL Parser")

@@ -67,3 +67,41 @@ function_arguments
     | expression (COMMA expression)*
     ;
 
+column_type
+    : type_name type_length? nullability?;
+
+type_name
+    : full_table_name;
+
+type_length
+    : LPAREN expression (COMMA expression)? RPAREN ;
+
+nullability
+    : NULL
+    | NOT NULL
+    ;
+
+column_definition
+    : full_column_name column_type ;
+
+table_constraint
+    : CONSTRAINT IDENTIFIER? constraint_body | constraint_body ;
+
+constraint_body
+    : pk_or_unique_constraint
+    | foreign_key_constraint
+    | check_constraint
+    ;
+
+pk_or_unique_constraint
+    : (PRIMARY KEY | UNIQUE)
+      LPAREN full_column_name (COMMA full_column_name)* RPAREN  ;
+
+foreign_key_constraint
+    : FOREIGN KEY
+      LPAREN full_column_name (COMMA full_column_name)* RPAREN
+      REFERENCES full_table_name
+      LPAREN full_column_name (COMMA full_column_name)* RPAREN   ;
+
+check_constraint
+    : CHECK LPAREN search_condition RPAREN ;
