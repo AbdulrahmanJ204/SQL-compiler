@@ -86,3 +86,67 @@ WITH NAME = Philipe,
 
 ALTER USER Mai
 WITH LOGIN = Mai;
+
+
+ALTER FUNCTION dbo.GetServerDate ()
+RETURNS DATETIME
+AS
+BEGIN
+    RETURN GETDATE();
+END;
+
+ALTER FUNCTION dbo.AddTax
+(
+    @amount DECIMAL(10,2),
+    @taxRate DECIMAL(5,2) = 15.00
+)
+RETURNS DECIMAL(10,2)
+AS
+BEGIN
+    RETURN @amount + (@amount * @taxRate / 100);
+END;
+
+ALTER FUNCTION dbo.GetActiveOrdersByCustomer
+(
+    @customerId INT
+)
+RETURNS TABLE
+AS
+RETURN
+(
+    SELECT OrderID, OrderDate, TotalAmount
+    FROM Sales.Orders
+    WHERE CustomerID = @customerId
+      AND Status = 'Active'
+);
+
+ALTER FUNCTION dbo.GetHighValueOrders
+(
+    @minAmount DECIMAL(10,2)
+)
+RETURNS @Result TABLE
+(
+    OrderID INT,
+    CustomerID INT,
+    TotalAmount DECIMAL(10,2)
+)
+AS
+BEGIN
+    INSERT INTO @Result (OrderID, CustomerID, TotalAmount)
+    SELECT OrderID, CustomerID, TotalAmount
+    FROM Sales.Orders
+    WHERE TotalAmount >= @minAmount;
+
+    RETURN;
+END;
+
+ALTER FUNCTION dbo.FormatName
+(
+    @firstName NVARCHAR(50) NOT NULL,
+    @lastName NVARCHAR(50) NULL = NULL
+)
+RETURNS NVARCHAR(101)
+AS
+BEGIN
+    RETURN COALESCE(@firstName, '') + N' ' + COALESCE(@lastName, '');
+END;

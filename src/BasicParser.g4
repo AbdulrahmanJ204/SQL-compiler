@@ -106,3 +106,23 @@ foreign_key_constraint
 check_constraint
     : CHECK LPAREN search_condition RPAREN ;
 user_name : IDENTIFIER  ;
+
+function_name : full_table_name  ;
+
+function_parameters
+    : LPAREN function_parameter_list? RPAREN  ;
+
+function_parameter_list
+    : function_parameter (COMMA function_parameter)*;
+
+function_parameter
+    : USER_VARIABLE type_name type_length? (NULL | NOT NULL)? (EQ default_value)?;
+
+default_value
+    : LITERAL
+    | NULL
+    ;
+
+return_data_type
+    : column_type | TABLE;
+
