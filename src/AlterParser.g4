@@ -6,6 +6,7 @@ import BasicParser;
 alter_statement
     : alter_table
     | alter_index
+    | alter_view
     ;
 
 alter_table
@@ -58,3 +59,8 @@ reorganize_options
 
 reorganize_option
     : LOB_COMPACTION EQ (ON | OFF) ;
+
+alter_view
+    : ALTER VIEW full_table_name column_list? AS select_statement view_check_option? SEMI? ;
+view_check_option
+    : WITH CHECK OPTION ;

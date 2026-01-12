@@ -43,3 +43,33 @@ ALTER INDEX IX_Orders_Old
 ALTER INDEX ALL
     ON Sales.Orders
     REBUILD;
+
+
+ALTER VIEW Sales.ActiveOrders
+AS
+SELECT OrderID, CustomerID, OrderDate
+FROM Sales.Orders
+WHERE Status = 'Active';
+
+ALTER VIEW dbo.CustomerSummary (CustomerID, TotalOrders, LastOrderDate)
+AS
+SELECT c.CustomerID,
+       COUNT(o.OrderID) AS TotalOrders,
+       MAX(o.OrderDate) AS LastOrderDate
+FROM dbo.Customers c
+LEFT JOIN dbo.Orders o ON c.CustomerID = o.CustomerID
+GROUP BY c.CustomerID;
+
+ALTER VIEW dbo.HighValueOrders
+AS
+SELECT OrderID, CustomerID, TotalAmount
+FROM dbo.Orders
+WHERE TotalAmount > 1000
+WITH CHECK OPTION;
+
+ALTER VIEW dbo.RecentOrders (OrderID, OrderDate, CustomerID)
+AS
+SELECT OrderID, OrderDate, CustomerID
+FROM dbo.Orders
+WHERE OrderDate >= '2025-01-01'
+WITH CHECK OPTION;
