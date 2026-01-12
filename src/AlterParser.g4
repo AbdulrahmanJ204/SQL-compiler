@@ -71,7 +71,7 @@ alter_user
     : ALTER USER user_name WITH user_option (COMMA user_option)* SEMI?;
 
 user_option
-    : NAME EQ IDENTIFIER
+    : IDENTIFIER EQ IDENTIFIER
     | DEFAULT_SCHEMA EQ (IDENTIFIER | NULL)
     | LOGIN EQ IDENTIFIER
     | PASSWORD EQ LITERAL (OLD_PASSWORD EQ LITERAL)?
