@@ -246,6 +246,14 @@ VARBINARY: 'VARBINARY';
 VARCHAR: 'VARCHAR';
 XML: 'XML';
 NEXT: 'NEXT';
+RENAME          : 'RENAME';
+REBUILD         : 'REBUILD';
+REORGANIZE      : 'REORGANIZE';
+DISABLE         : 'DISABLE';
+SORT_IN_TEMPDB  : 'SORT_IN_TEMPDB';
+ONLINE          : 'ONLINE';
+MAXDOP          : 'MAXDOP';
+LOB_COMPACTION  : 'LOB_COMPACTION';
 
 //! ╔══════════════════════════════════╗
 //! ║━━━━━━━━━━━━<LITERALs>━━━━━━━━━━━━║

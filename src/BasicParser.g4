@@ -14,7 +14,7 @@ having_clause: HAVING search_condition;
 
 group_by_clause: GROUP BY group_by_item_list (WITH ROLLUP | WITH CUBE)?;
 
-group_by_item_list: expression (expression)*;
+group_by_item_list: expression (COMMA expression)*;
 
 order_by_clause: ORDER BY order_by_list order_by_offset?;
 
