@@ -45,34 +45,37 @@ ALTER INDEX ALL
     REBUILD;
 
 
-ALTER VIEW Sales.ActiveOrders
+ALTER VIEW SimpleView
 AS
-SELECT OrderID, CustomerID, OrderDate
-FROM Sales.Orders
-WHERE Status = 'Active';
+SELECT Id, Name
+FROM Customers;
 
-ALTER VIEW dbo.CustomerSummary (CustomerID, TotalOrders, LastOrderDate)
+ALTER VIEW Sales.CustomerSummary (CustomerId, FullName, TotalOrders)
 AS
-SELECT c.CustomerID,
-       COUNT(o.OrderID) AS TotalOrders,
-       MAX(o.OrderDate) AS LastOrderDate
-FROM dbo.Customers c
-LEFT JOIN dbo.Orders o ON c.CustomerID = o.CustomerID
-GROUP BY c.CustomerID;
+SELECT c.Id,
+       c.FirstName + ' ' + c.LastName,
+       COUNT(o.Id)
+FROM Sales.Customers AS c
+LEFT JOIN Sales.Orders AS o
+    ON o.CustomerId = c.Id
+GROUP BY c.Id, c.FirstName, c.LastName;
 
-ALTER VIEW dbo.HighValueOrders
+ALTER VIEW Reporting.ActiveOrders (OrderId, CustomerId, TotalAmount)
+SCHEMABINDING
 AS
-SELECT OrderID, CustomerID, TotalAmount
-FROM dbo.Orders
-WHERE TotalAmount > 1000
+SELECT o.Id,
+       o.CustomerId,
+       o.TotalAmount
+FROM dbo.Orders AS o
+WHERE o.IsActive = 1
 WITH CHECK OPTION;
 
-ALTER VIEW dbo.RecentOrders (OrderID, OrderDate, CustomerID)
+ALTER VIEW dbo.EncryptedCustomerNames
+ENCRYPTION
 AS
-SELECT OrderID, OrderDate, CustomerID
-FROM dbo.Orders
-WHERE OrderDate >= '2025-01-01'
-WITH CHECK OPTION;
+SELECT Id, FirstName, LastName
+FROM dbo.Customers;
+
 
 ALTER USER Mary5 WITH NAME = Mary51;
 
@@ -150,3 +153,4 @@ AS
 BEGIN
     RETURN COALESCE(@firstName, '') + N' ' + COALESCE(@lastName, '');
 END;
+

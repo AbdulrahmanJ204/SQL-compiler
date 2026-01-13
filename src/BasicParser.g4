@@ -164,5 +164,14 @@ default_value
 return_data_type
     : column_type | TABLE;
 
+index_name : IDENTIFIER;
 
+
+view_attribute
+    : ENCRYPTION
+    | SCHEMABINDING
+    | VIEW_METADATA
+    ;
+
+view_check_option : WITH CHECK OPTION ;
 table_type_definition:; //todo replace this with actual grammer

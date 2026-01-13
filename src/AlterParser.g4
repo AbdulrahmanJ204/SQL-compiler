@@ -45,7 +45,6 @@ index_action
     | RENAME TO index_name
     ;
 
-index_name : IDENTIFIER;
 
 rebuild_options
     : WITH LPAREN rebuild_option (COMMA rebuild_option)* RPAREN ;
@@ -63,9 +62,10 @@ reorganize_option
     : LOB_COMPACTION EQ (ON | OFF) ;
 
 alter_view
-    : ALTER VIEW full_table_name column_list? AS select_statement view_check_option? SEMI? ;
-view_check_option
-    : WITH CHECK OPTION ;
+    : ALTER VIEW full_table_name column_list?
+      view_attribute?
+      AS select_statement view_check_option? SEMI?
+    ;
 
 alter_user
     : ALTER USER user_name WITH user_option (COMMA user_option)* SEMI?;
