@@ -4,8 +4,7 @@ options {
 	tokenVocab = SQLLexer;
 }
 
-import BasicParser;
-import OutputParser;
+import BasicParser, OutputParser, CursorParser;
 
 
 delete_statement
@@ -14,7 +13,6 @@ delete_statement
 
   
 delete_where_clause
-    : WHERE search_condition
-    | WHERE CURRENT OF cursor_name
+    : WHERE (search_condition | CURRENT OF cursor_name)
     ;
 
