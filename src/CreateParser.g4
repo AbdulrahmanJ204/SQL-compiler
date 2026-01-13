@@ -8,7 +8,9 @@ create_statement
     : create_table
     | create_index
     | create_view
+    | create_user
     ;
+
 
 create_table
     : CREATE TABLE full_table_name create_table_body SEMI?
@@ -77,3 +79,34 @@ view_with_attributes
     : WITH view_attribute (COMMA view_attribute)*;
 
 
+
+create_user
+    : CREATE USER user_name create_user_core SEMI?;
+
+create_user_core
+    : (FOR | FROM)? LOGIN login_name with_user_options?
+    | WITH PASSWORD EQ LITERAL (COMMA create_user_option)*
+    | WITHOUT LOGIN with_user_options?
+    ;
+
+with_user_options
+    : WITH create_user_option (COMMA create_user_option)*;
+
+create_user_option
+    : DEFAULT_SCHEMA EQ full_table_name
+    | DEFAULT_LANGUAGE EQ default_language_value
+    | SID EQ sid_value
+    ;
+
+default_language_value
+    : NONE
+    | LITERAL
+    | IDENTIFIER
+    ;
+
+login_name: IDENTIFIER;
+
+sid_value
+    : LITERAL
+    | IDENTIFIER
+    ;

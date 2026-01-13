@@ -277,6 +277,8 @@ INCLUDE:'INCLUDE';
 ENCRYPTION:'ENCRYPTION';
 SCHEMABINDING:'SCHEMABINDING';
 VIEW_METADATA:'VIEW_METADATA';
+WITHOUT:'WITHOUT';
+SID:'SID';
 //! ╔══════════════════════════════════╗
 //! ║━━━━━━━━━━━━<LITERALs>━━━━━━━━━━━━║
 //! ╚══════════════════════════════════╝
