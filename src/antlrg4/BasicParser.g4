@@ -7,7 +7,9 @@ options {
 import ExpressionParser, SQLParser;
 
 where_clause: WHERE search_condition;
-
+delete_and_update_where_clause
+    : where_clause | (WHERE CURRENT OF cursor_name)
+    ;
 join_clause: join_type JOIN table_source_item join_condition;
 
 having_clause: HAVING search_condition;
@@ -43,7 +45,7 @@ derived_table
     : LPAREN select_statement RPAREN
     ;
 
-as_alias: AS? IDENTIFIER;
+as_alias: AS? expression;
 
 full_table_name: IDENTIFIER (DOT IDENTIFIER)*;
 
@@ -73,6 +75,8 @@ datatype
     | BIGINT
     | SMALLINT
     | TINYINT
+    | UNIQUEIDENTIFIER
+    | MONEY
     | decimal_data_type
     | numeric_data_type
     | FLOAT
@@ -107,7 +111,7 @@ function_call
 
 function_arguments
     : STAR
-    | expression (COMMA expression)*
+    | expression  as_alias? (COMMA expression  as_alias?)*
     ;
 
 
@@ -117,16 +121,22 @@ nullability
     ;
 
 column_definition
-    : full_column_name column_type column_constraint* ;
+    : full_column_name column_type column_constraint*
+    | full_column_name as_alias;
 
 
 column_constraint
-    : PRIMARY KEY
+    : CONSTRAINT IDENTIFIER DEFAULT literal_with_optional_parentheses
+    | PRIMARY KEY
     | UNIQUE
     | NOT NULL
     | NULL
     | DEFAULT LITERAL
     | IDENTITY
+    ;
+literal_with_optional_parentheses
+    : LITERAL
+    | LPAREN LITERAL RPAREN
     ;
 
 table_constraint
@@ -181,3 +191,27 @@ view_attribute
     ;
 
 view_check_option : WITH CHECK OPTION ;
+table_type_definition
+    :TABLE LPAREN table_type_element (COMMA table_type_element)* RPAREN;
+
+
+table_type_element
+    : column_definition
+    | table_constraint
+    ;
+/*function_body
+    : BEGIN statement* RETURN expression END
+    | RETURN select_statement
+    | RETURN LPAREN select_statement RPAREN
+    ;
+
+function_return_type
+    : return_data_type
+    | USER_VARIABLE  table_type_definition
+    ;*/
+
+go_statement: ((USE IDENTIFIER )| GO) SEMI?;
+
+statement_block: BEGIN SEMI? (statement)+ END SEMI?;
+
+print_clause: PRINT expression SEMI?;

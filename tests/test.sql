@@ -11,10 +11,17 @@
 -- SELECT * FROM users WHERE id = 10;
 -- SELECT name FROM people WHERE age >= 18;
 
-INSERT INTO employees (id, name) VALUES (1, 'John');
-INSERT INTO employees (id, name) VALUES (1, 'John'), (2, 'Jane');
-INSERT INTO employees SELECT * FROM temp_employees;
+--INSERT INTO employees (id, name) VALUES (1, 'John');
+--INSERT INTO employees (id, name) VALUES (1, 'John'), (2, 'Jane');
+--INSERT INTO employees SELECT * FROM temp_employees;
 
 -- UPDATE t SET salary = 5000
 -- FROM employees t
 -- WHERE t.id = 10;
+
+PRINT 'Hello';
+GO
+PRINT @VAR;
+GO
+
+DELETE FROM employees WHERE id = 5;
