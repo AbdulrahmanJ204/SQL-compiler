@@ -38,7 +38,7 @@ if ($LASTEXITCODE -ne 0) {
 Write-Success "✓ Lexer generated successfully`n"
 
 Write-Info "Generating Parser..."
-antlr4 "$SrcDir/SQLParser.g4" -Dlanguage=Python3 -o $GenDir
+antlr4 "$SrcDir/SQLParser.g4" -Dlanguage=Python3 -no-listener -visitor -o $GenDir
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error "✗ Parser generation failed"

@@ -7,7 +7,9 @@ options {
 import ExpressionParser, SQLParser;
 
 where_clause: WHERE search_condition;
-
+delete_and_update_where_clause
+    : where_clause | (WHERE CURRENT OF cursor_name)
+    ;
 join_clause: join_type JOIN table_source_item join_condition;
 
 having_clause: HAVING search_condition;

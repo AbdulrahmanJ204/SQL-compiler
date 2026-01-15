@@ -4,11 +4,13 @@ options {
 	tokenVocab = SQLLexer;
 }
 
-import SelectParser , InsertParser ,DeleteParser,UpdateParser,AlterParser, OutputParser,CteParser, CreateParser, CursorParser, VariableParser, ControlFlowParser;
 
-tsql_file: statement* EOF;
+import SelectParser , InsertParser ,DeleteParser,UpdateParser,AlterParser, OutputParser,CteParser, CreateParser, CursorParser, VariableParser, ControlFlowParser,DropParser;
 
-ddl_statement:alter_statement | create_statement;
+program: statement* EOF;
+
+
+ddl_statement:alter_statement | create_statement | drop_statement;
 dml_statement:with_cte? (select_statement | insert_statement | delete_statement | update_statement);
 variable_statement: declare_var | set_variable;
 cursor_statement: declare_cursor | close_cursor | open_cursor | fetch_row | deallocate_cursor;
