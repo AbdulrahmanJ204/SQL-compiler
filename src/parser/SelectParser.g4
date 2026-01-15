@@ -7,9 +7,18 @@ options {
 import BasicParser;
 
 select_statement:
-	SELECT select_modifier select_list (FROM table_source_list where_clause? group_by_clause? having_clause? order_by_clause?)? SEMI?;
+	SELECT select_modifier select_list (INTO full_table_name)? (FROM table_source_list where_clause? group_by_clause? having_clause? order_by_clause?)? SEMI?;
 
-select_list: STAR | select_list_element (COMMA select_list_element)*;
+select_list
+    : STAR
+    | select_list_item (COMMA select_list_item)*
+    ;
+
+select_list_item
+    : full_table_name DOT STAR
+    | STAR
+    | select_list_element
+    ;
 
 select_list_element
     : expression as_alias?
