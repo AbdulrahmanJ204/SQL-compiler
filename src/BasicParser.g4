@@ -4,7 +4,7 @@ options {
 	tokenVocab = SQLLexer;
 }
 
-import ExpressionParser;
+import ExpressionParser, SQLParser;
 
 where_clause: WHERE search_condition;
 
@@ -65,7 +65,7 @@ user_variable_list: USER_VARIABLE (COMMA USER_VARIABLE)*;
 operators: EQ | NEQ | LTE | GTE | LT | GT ;
 
 column_type
-    : datatype type_length? nullability?;
+    : datatype nullability?;
 
 datatype
     : full_table_name
@@ -102,7 +102,7 @@ varbinary_data_type:VARBINARY (LPAREN (LITERAL|MAX) RPAREN)?;
 time_data_type:TIME|DATETIME2|DATETIMEOFFSET (LPAREN LITERAL RPAREN)?;
 
 function_call
-    : (IDENTIFIER|MAX) LPAREN function_arguments? RPAREN
+    : (IDENTIFIER DOT)? (IDENTIFIER|MAX) LPAREN function_arguments? RPAREN
     ;
 
 function_arguments
@@ -111,19 +111,26 @@ function_arguments
     ;
 
 
-type_length
-    : LPAREN expression (COMMA expression)? RPAREN ;
-
 nullability
     : NULL
     | NOT NULL
     ;
 
 column_definition
-    : full_column_name column_type ;
+    : full_column_name column_type column_constraint* ;
+
+
+column_constraint
+    : PRIMARY KEY
+    | UNIQUE
+    | NOT NULL
+    | NULL
+    | DEFAULT LITERAL
+    | IDENTITY
+    ;
 
 table_constraint
-    : CONSTRAINT IDENTIFIER? constraint_body | constraint_body ;
+    : CONSTRAINT IDENTIFIER? constraint_body ;
 
 constraint_body
     : pk_or_unique_constraint
@@ -154,7 +161,7 @@ function_parameter_list
     : function_parameter (COMMA function_parameter)*;
 
 function_parameter
-    : USER_VARIABLE datatype type_length? (NULL | NOT NULL)? (EQ default_value)?;
+    : USER_VARIABLE AS?  datatype  (NULL | NOT NULL)? (EQ default_value)? (READONLY)?;
 
 default_value
     : LITERAL
@@ -174,4 +181,3 @@ view_attribute
     ;
 
 view_check_option : WITH CHECK OPTION ;
-table_type_definition:; //todo replace this with actual grammer
