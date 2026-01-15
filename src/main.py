@@ -2,8 +2,10 @@ import argparse
 from antlr4 import FileStream, CommonTokenStream
 from antlr4.error.DiagnosticErrorListener import DiagnosticErrorListener
 
-from generated.SQLLexer import SQLLexer
-from generated.SQLParser import SQLParser
+from generated import SQLLexer
+from generated import SQLParser
+
+from ast.ast_builder_visitor import ASTBuilderVisitor
 from visualizar import visualize_parse_tree
 
 
@@ -90,12 +92,18 @@ def main():
     parser.removeErrorListeners()
     parser.addErrorListener(DiagnosticErrorListener())
 
-    tree = parser.tsql_file()
+    tree = parser.program()
     # print(tree.toStringTree(recog=parser))
     # Visualize
 
     print(to_string_tree(tree, lexer.symbolicNames))
+    visitor = ASTBuilderVisitor()
+    ast = visitor.visit(tree)
+
+    print("\nAST:")
+    ast.print()
     visualize_parse_tree(parser, tree, title="T-SQL Parse Tree")
+
     
 
 

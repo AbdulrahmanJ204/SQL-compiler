@@ -8,7 +8,7 @@ param(
     [switch]$ShowTokens
 )
 
-$SrcDir = "src"
+$SrcDir = "src/parser"
 $GenDir = "src/generated"
 $TestsDir = ""
 
