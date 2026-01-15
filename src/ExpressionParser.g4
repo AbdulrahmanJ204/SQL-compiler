@@ -4,8 +4,7 @@ options {
 	tokenVocab = SQLLexer;
 }
 
-import BasicParser;
-import SelectParser;
+import BasicParser, SelectParser;
 
 search_condition: or_expression;
 
@@ -32,7 +31,7 @@ comparison_predicate: expression operators (expression | quantified_subquery);
 quantified_subquery
     : (ALL | ANY | SOME) LPAREN select_statement RPAREN
     ;
-in_predicate:expression NOT? IN LPAREN in_list RPAREN;
+in_predicate:expression NOT? IN LPAREN (in_list | select_statement) RPAREN;
 in_list: expression (COMMA expression)*;
 between_predicate: expression NOT? BETWEEN expression AND expression ;
 like_predicate: expression NOT? LIKE expression ;

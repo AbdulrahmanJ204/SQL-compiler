@@ -12,7 +12,7 @@ insert_statement:
 	INSERT
 	top_clause?
 	INTO?
-	full_table_name
+	(full_table_name | USER_VARIABLE)
 	column_list?
 	output_clause?
 	insert_source SEMI?;
