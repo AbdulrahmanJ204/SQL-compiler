@@ -4,7 +4,7 @@ options {
 	tokenVocab = SQLLexer;
 }
 
-import ExpressionParser;
+import ExpressionParser, SQLParser;
 
 where_clause: WHERE search_condition;
 delete_and_update_where_clause
@@ -45,7 +45,7 @@ derived_table
     : LPAREN select_statement RPAREN
     ;
 
-as_alias: AS? IDENTIFIER;
+as_alias: AS? expression;
 
 full_table_name: IDENTIFIER (DOT IDENTIFIER)*;
 
@@ -67,7 +67,7 @@ user_variable_list: USER_VARIABLE (COMMA USER_VARIABLE)*;
 operators: EQ | NEQ | LTE | GTE | LT | GT ;
 
 column_type
-    : datatype type_length? nullability?;
+    : datatype nullability?;
 
 datatype
     : full_table_name
@@ -75,6 +75,8 @@ datatype
     | BIGINT
     | SMALLINT
     | TINYINT
+    | UNIQUEIDENTIFIER
+    | MONEY
     | decimal_data_type
     | numeric_data_type
     | FLOAT
@@ -104,17 +106,14 @@ varbinary_data_type:VARBINARY (LPAREN (LITERAL|MAX) RPAREN)?;
 time_data_type:TIME|DATETIME2|DATETIMEOFFSET (LPAREN LITERAL RPAREN)?;
 
 function_call
-    : (IDENTIFIER|MAX) LPAREN function_arguments? RPAREN
+    : (IDENTIFIER DOT)? (IDENTIFIER|MAX) LPAREN function_arguments? RPAREN
     ;
 
 function_arguments
     : STAR
-    | expression (COMMA expression)*
+    | expression  as_alias? (COMMA expression  as_alias?)*
     ;
 
-
-type_length
-    : LPAREN expression (COMMA expression)? RPAREN ;
 
 nullability
     : NULL
@@ -122,10 +121,26 @@ nullability
     ;
 
 column_definition
-    : full_column_name column_type ;
+    : full_column_name column_type column_constraint*
+    | full_column_name as_alias;
+
+
+column_constraint
+    : CONSTRAINT IDENTIFIER DEFAULT literal_with_optional_parentheses
+    | PRIMARY KEY
+    | UNIQUE
+    | NOT NULL
+    | NULL
+    | DEFAULT LITERAL
+    | IDENTITY
+    ;
+literal_with_optional_parentheses
+    : LITERAL
+    | LPAREN LITERAL RPAREN
+    ;
 
 table_constraint
-    : CONSTRAINT IDENTIFIER? constraint_body | constraint_body ;
+    : CONSTRAINT IDENTIFIER? constraint_body ;
 
 constraint_body
     : pk_or_unique_constraint
@@ -156,7 +171,7 @@ function_parameter_list
     : function_parameter (COMMA function_parameter)*;
 
 function_parameter
-    : USER_VARIABLE datatype type_length? (NULL | NOT NULL)? (EQ default_value)?;
+    : USER_VARIABLE AS?  datatype  (NULL | NOT NULL)? (EQ default_value)? (READONLY)?;
 
 default_value
     : LITERAL
@@ -176,4 +191,27 @@ view_attribute
     ;
 
 view_check_option : WITH CHECK OPTION ;
-table_type_definition:; //todo replace this with actual grammer
+table_type_definition
+    :TABLE LPAREN table_type_element (COMMA table_type_element)* RPAREN;
+
+
+table_type_element
+    : column_definition
+    | table_constraint
+    ;
+/*function_body
+    : BEGIN statement* RETURN expression END
+    | RETURN select_statement
+    | RETURN LPAREN select_statement RPAREN
+    ;
+
+function_return_type
+    : return_data_type
+    | USER_VARIABLE  table_type_definition
+    ;*/
+
+go_statement: ((USE IDENTIFIER )| GO) SEMI?;
+
+statement_block: BEGIN SEMI? (statement)+ END SEMI?;
+
+print_clause: PRINT expression SEMI?;
