@@ -4,7 +4,7 @@ options {
 	tokenVocab = SQLLexer;
 }
 
-import ExpressionParser;
+import ExpressionParser, SQLParser;
 
 where_clause: WHERE search_condition;
 
@@ -175,3 +175,10 @@ view_attribute
 
 view_check_option : WITH CHECK OPTION ;
 table_type_definition:; //todo replace this with actual grammer
+
+
+go_statement: ((USE IDENTIFIER )| GO) SEMI?;
+
+statement_block: BEGIN SEMI? (statement)+ END SEMI?;
+
+print_clause: PRINT expression SEMI?;

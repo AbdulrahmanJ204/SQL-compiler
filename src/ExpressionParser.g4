@@ -52,7 +52,9 @@ add_sub_expression:
 	mul_div_expression ((PLUS | MINUS) mul_div_expression)*;
 
 mul_div_expression:
-	primary_expression ((STAR | SLASH | PERCENT) primary_expression)*;
+	unary_expression ((STAR | SLASH | PERCENT) unary_expression)*;
+
+unary_expression: (PLUS | MINUS)* primary_expression;
 
 primary_expression:
 	LPAREN expression RPAREN
