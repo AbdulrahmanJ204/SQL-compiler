@@ -61,13 +61,13 @@
 --a & b
 --a | b ^ c & d
 --(((a)))
---a IN (a + b * c,- -5 , 5+ 10, a | b ^ c & d,(((a))))
+a IN (a + b * c,- -5 , 5+ 10, a | b ^ c & d,(((a))))
 --a IN (1, 2) AND (b BETWEEN 3 AND 4 OR c IS NULL)
 --NOT (a = 1 AND b IN (SELECT id FROM t)) OR c IS NOT NULL
 -- ERRORS TESTS
 --a =
 --@``
-a == 5
+--a == 5
 --DELETE FROM emp WHERE CURRENT OF cur1;
 
 
