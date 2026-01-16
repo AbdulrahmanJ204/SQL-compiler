@@ -122,20 +122,36 @@ nullability_clause
 
 column_definition
     : full_column_name column_type column_constraint*
+    | full_column_name AS LPAREN expression RPAREN
     | full_column_name as_alias;
 
-
 column_constraint
-    : CONSTRAINT IDENTIFIER DEFAULT literal_with_optional_parentheses
+    : CONSTRAINT IDENTIFIER DEFAULT default_value_expr
     | PRIMARY KEY
-    | UNIQUE
+    | UNIQUE (CLUSTERED | NONCLUSTERED)?
     | NOT NULL
     | NULL
-    | DEFAULT literal
+    | DEFAULT default_value_expr
     | IDENTITY LPAREN NUMBER_LITERAL COMMA NUMBER_LITERAL RPAREN?
     | IDENTITY
     | ROWGUIDCOL
+    | REFERENCES full_table_name LPAREN full_column_name (COMMA full_column_name)* RPAREN
+    | FOREIGN KEY REFERENCES full_table_name LPAREN full_column_name (COMMA full_column_name)* RPAREN
+    | CHECK LPAREN search_condition RPAREN
     ;
+
+default_value_expr
+    : literal
+    | niladic_function
+    | LPAREN function_call RPAREN
+    ;
+
+niladic_function
+    : USER
+    | SYSTEM_USER
+    | CURRENT_USER
+    ;
+
 literal_with_optional_parentheses
     : literal
     | LPAREN literal RPAREN
@@ -153,14 +169,17 @@ constraint_body
     ;
 
 pk_or_unique_constraint
-    : (PRIMARY KEY | UNIQUE)
-      LPAREN full_column_name (COMMA full_column_name)* RPAREN  ;
+    : (PRIMARY KEY (CLUSTERED | NONCLUSTERED)?
+     | UNIQUE (CLUSTERED | NONCLUSTERED)?)
+      LPAREN full_column_name (COMMA full_column_name)* RPAREN
+    ;
 
 foreign_key_constraint
     : FOREIGN KEY
       LPAREN full_column_name (COMMA full_column_name)* RPAREN
       REFERENCES full_table_name
-      LPAREN full_column_name (COMMA full_column_name)* RPAREN   ;
+      LPAREN full_column_name (COMMA full_column_name)* RPAREN
+    ;
 
 check_constraint
     : CHECK LPAREN search_condition RPAREN ;
