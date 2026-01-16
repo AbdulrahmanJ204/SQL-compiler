@@ -67,7 +67,7 @@ user_variable_list: USER_VARIABLE (COMMA USER_VARIABLE)*;
 operators: EQ | NEQ | LTE | GTE | LT | GT ;
 
 column_type
-    : datatype nullability_clause?;
+    : datatype SPARSE? nullability_clause?;
 
 datatype
     : full_table_name
@@ -103,7 +103,7 @@ binary_data_type:BINARY (LPAREN literal RPAREN)?;
 varchar_data_type:NVARCHAR (LPAREN (literal|MAX) RPAREN)?;
 nvarchar_data_type:VARCHAR (LPAREN (literal|MAX) RPAREN)?;
 varbinary_data_type:VARBINARY (LPAREN (literal|MAX) RPAREN)?;
-time_data_type:TIME|DATETIME2|DATETIMEOFFSET (LPAREN literal RPAREN)?;
+time_data_type: TIME (LPAREN literal RPAREN)? | DATETIME2 (LPAREN literal RPAREN)? | DATETIMEOFFSET (LPAREN literal RPAREN)?;
 
 function_call
     : (IDENTIFIER DOT)? (IDENTIFIER|MAX) LPAREN function_arguments? RPAREN
@@ -122,12 +122,18 @@ nullability_clause
 
 column_definition
     : full_column_name column_type column_constraint*
-    | full_column_name AS LPAREN expression RPAREN
-    | full_column_name as_alias;
+    | computed_column_definition
+    | full_column_name as_alias
+    ;
+
+computed_column_definition
+    : full_column_name AS expression
+      PERSISTED?
+    ;
 
 column_constraint
     : CONSTRAINT IDENTIFIER DEFAULT default_value_expr
-    | PRIMARY KEY
+    | PRIMARY KEY (CLUSTERED | NONCLUSTERED)?
     | UNIQUE (CLUSTERED | NONCLUSTERED)?
     | NOT NULL
     | NULL

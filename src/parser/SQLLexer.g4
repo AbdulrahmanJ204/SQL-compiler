@@ -304,7 +304,8 @@ CALLER:'CALLER';
 SELF:'SELF';
 OWNER:'OWNER';
 WRITE:'WRITE';
-
+PERSISTED:'PERSISTED';
+SPARSE:'SPARSE';
 //! ╔══════════════════════════════════╗
 //! ║━━━━━━━━━━━━<LITERALs>━━━━━━━━━━━━║
 //! ╚══════════════════════════════════╝
