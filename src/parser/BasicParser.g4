@@ -67,7 +67,7 @@ user_variable_list: USER_VARIABLE (COMMA USER_VARIABLE)*;
 operators: EQ | NEQ | LTE | GTE | LT | GT ;
 
 column_type
-    : datatype nullability?;
+    : datatype nullability_clause?;
 
 datatype
     : full_table_name
@@ -115,34 +115,45 @@ function_arguments
     ;
 
 
-nullability
+nullability_clause
     : NULL
     | NOT NULL
     ;
 
 column_definition
-    : full_column_name column_type column_constraint*
-    | full_column_name as_alias;
-
-
-column_constraint
-    : CONSTRAINT IDENTIFIER DEFAULT literal_with_optional_parentheses
-    | PRIMARY KEY
-    | UNIQUE
-    | NOT NULL
-    | NULL
-    | DEFAULT literal
-    | IDENTITY LPAREN NUMBER_LITERAL COMMA NUMBER_LITERAL RPAREN?
-    | IDENTITY
-    | ROWGUIDCOL
+    : full_column_name column_type
+      default_clause?
+      identity_clause?
+      nullability_clause?
+      column_inline_constraint*
+      table_constraint*
+    | full_column_name as_alias
     ;
-literal_with_optional_parentheses
+
+
+default_clause
+    : (CONSTRAINT IDENTIFIER)? DEFAULT constant_expression  ;
+
+constant_expression
     : literal
-    | LPAREN literal RPAREN
+    | NULL
+    | function_call
+    | LPAREN function_call RPAREN
+    | USER
+    ;
+
+identity_clause
+    : IDENTITY (LPAREN NUMBER_LITERAL COMMA NUMBER_LITERAL RPAREN)?;
+
+column_inline_constraint
+    : PRIMARY KEY (CLUSTERED | NONCLUSTERED)?
+    | UNIQUE (CLUSTERED | NONCLUSTERED)?
     ;
 
 table_constraint
-    : CONSTRAINT IDENTIFIER? constraint_body ;
+    : CONSTRAINT IDENTIFIER? constraint_body
+    | constraint_body
+    ;
 
 constraint_body
     : pk_or_unique_constraint
@@ -201,16 +212,6 @@ table_type_element
     : column_definition
     | table_constraint
     ;
-/*function_body
-    : BEGIN statement* RETURN expression END
-    | RETURN select_statement
-    | RETURN LPAREN select_statement RPAREN
-    ;
-
-function_return_type
-    : return_data_type
-    | USER_VARIABLE  table_type_definition
-    ;*/
 
 go_statement: ((USE IDENTIFIER )| GO) SEMI?;
 
