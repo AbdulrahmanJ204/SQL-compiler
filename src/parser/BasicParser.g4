@@ -121,33 +121,24 @@ nullability_clause
     ;
 
 column_definition
-    : full_column_name column_type
-      default_clause?
-      identity_clause?
-      nullability_clause?
-      column_inline_constraint*
-      table_constraint*
-    | full_column_name as_alias
-    ;
+    : full_column_name column_type column_constraint*
+    | full_column_name as_alias;
 
 
-default_clause
-    : (CONSTRAINT IDENTIFIER)? DEFAULT constant_expression  ;
-
-constant_expression
-    : literal
+column_constraint
+    : CONSTRAINT IDENTIFIER DEFAULT literal_with_optional_parentheses
+    | PRIMARY KEY
+    | UNIQUE
+    | NOT NULL
     | NULL
-    | function_call
-    | LPAREN function_call RPAREN
-    | USER
+    | DEFAULT literal
+    | IDENTITY LPAREN NUMBER_LITERAL COMMA NUMBER_LITERAL RPAREN?
+    | IDENTITY
+    | ROWGUIDCOL
     ;
-
-identity_clause
-    : IDENTITY (LPAREN NUMBER_LITERAL COMMA NUMBER_LITERAL RPAREN)?;
-
-column_inline_constraint
-    : PRIMARY KEY (CLUSTERED | NONCLUSTERED)?
-    | UNIQUE (CLUSTERED | NONCLUSTERED)?
+literal_with_optional_parentheses
+    : literal
+    | LPAREN literal RPAREN
     ;
 
 table_constraint
@@ -220,3 +211,13 @@ statement_block: BEGIN SEMI? (statement)+ END SEMI?;
 print_clause: PRINT expression SEMI?;
 
 literal: NUMBER_LITERAL |TRUE |FALSE |BIT_STRING_LITERAL |MONEY_LITERAL |HEX_LITERAL |STRING_LITERAL |UNICODE_STRING_LITERAL;
+/*function_body
+    : BEGIN statement* RETURN expression END
+    | RETURN select_statement
+    | RETURN LPAREN select_statement RPAREN
+    ;
+
+function_return_type
+    : return_data_type
+    | USER_VARIABLE  table_type_definition
+    ;*/
