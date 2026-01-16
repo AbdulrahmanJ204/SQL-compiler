@@ -17,7 +17,7 @@ cursor_statement: declare_cursor | close_cursor | open_cursor | fetch_row | deal
 
 
 
-statement: dml_statement | ddl_statement | variable_statement | cursor_statement | control_flow_statement | go_statement| print_clause|function_call|set_statement;
+statement: search_condition| dml_statement | ddl_statement | variable_statement | cursor_statement | control_flow_statement | go_statement| print_clause|function_call|set_statement;
 set_statement
     : SET IDENTITY_INSERT full_table_name (ON | OFF) SEMI? ;
 

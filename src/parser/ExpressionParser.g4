@@ -59,5 +59,9 @@ primary_expression:
 	LPAREN expression RPAREN
 	| full_column_name
 	| function_call
-	| literal| NULL| USER_VARIABLE|SYSTEM_VARIABLE|derived_table;
+	| literal
+	| NULL
+	| USER_VARIABLE
+	| SYSTEM_VARIABLE
+	| derived_table;
 

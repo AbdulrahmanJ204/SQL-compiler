@@ -1,7 +1,7 @@
 from antlr4 import *
 from generated.SQLLexer import SQLLexer
 from generated.SQLParser import SQLParser
-from ast.ast_builder_visitor import ASTBuilderVisitor
+from sql_ast.ast_builder_visitor import ASTBuilderVisitor
 
 
 def main():

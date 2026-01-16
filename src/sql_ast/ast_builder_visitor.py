@@ -2,9 +2,11 @@ from generated.SQLParser import SQLParser
 from generated.SQLParserVisitor import SQLParserVisitor
 from .program import Program
 from .statements import PrintStatement, DeleteStatement, WhereClause, SetStatement, StatementBlock
-from .expressions import Literal, Variable, BinaryExpression, UnaryExpression, ComparisonExpression, QuantifiedSubquery, \
-    BetweenExpression, LikeExpression, NullCheck, ExistsExpression, InExpression
-from .basic import Table, TableName
+from .expressions import Literal, Variable, UnaryExpression, ComparisonExpression, QuantifiedSubquery, \
+    BetweenExpression, LikeExpression, NullCheck, ExistsExpression, InExpression, NotExpression, OrExpression, \
+    AndExpression, OrBitwiseExpression, XorBitwiseExpression, AndBitwiseExpression, AddExpression, SubExpression, \
+    MulExpression, DivExpression, ModExpression
+from .basic import Table, TableRef, ColumnRef
 
 
 class ASTBuilderVisitor(SQLParserVisitor):
@@ -21,7 +23,6 @@ class ASTBuilderVisitor(SQLParserVisitor):
 
         return Program(statements)
 
-
     # no override for ddl
     # no override for dml
     # no override for variable_statement
@@ -30,17 +31,12 @@ class ASTBuilderVisitor(SQLParserVisitor):
 
     def visitSet_statement(self, ctx: SQLParser.Set_statementContext):
         on = True if ctx.ON() else False
-        table= self.visit(ctx.full_table_name())
+        table = self.visit(ctx.full_table_name())
         return SetStatement(table, on)
 
     ###################################################################
     #             ! END OF SQLParser Visit.
     ###################################################################
-
-
-
-
-
 
     def visitDelete_statement(self, ctx: SQLParser.Delete_statementContext):
         # TODO : reconstruct this.
@@ -91,8 +87,7 @@ class ASTBuilderVisitor(SQLParserVisitor):
         return "Having Node"
 
     def visitLiteral(self, ctx: SQLParser.LiteralContext):
-        text = "Not Implemented"  # todo COMPLETE THIS
-        return Literal(text)
+        return Literal(ctx.getText())
 
     ###################################################################
     #             BasicParser Visit.
@@ -100,8 +95,16 @@ class ASTBuilderVisitor(SQLParserVisitor):
 
     def visitFull_table_name(self, ctx: SQLParser.Full_table_nameContext):
         parts = [identifier.getText() for identifier in ctx.IDENTIFIER()]
-        return TableName(parts)
+        return TableRef(parts)
 
+    def visitFull_column_name(self, ctx: SQLParser.Full_column_nameContext):
+        parts = [ctx.getChild(0).getText()]
+        for ident in ctx.IDENTIFIER()[1:]:
+            parts.append(ident.getText())
+        return ColumnRef(parts)
+
+    def visitDerived_table(self, ctx:SQLParser.Derived_tableContext):
+        return self.visit(ctx.select_statement())
     ###################################################################
     #             ExpressionParser Visit.
     ###################################################################
@@ -110,21 +113,20 @@ class ASTBuilderVisitor(SQLParserVisitor):
         expr = self.visit(ctx.and_expression(0))
         for i in range(1, len(ctx.and_expression())):
             right_side = self.visit(ctx.and_expression(i))
-            expr = BinaryExpression(expr, "OR", right_side)
+            expr = OrExpression(expr, right_side)
         return expr
 
     def visitAnd_expression(self, ctx: SQLParser.And_expressionContext):
         expr = self.visit(ctx.not_expression(0))
         for i in range(1, len(ctx.not_expression())):
             right_side = self.visit(ctx.not_expression(i))
-            expr = BinaryExpression(expr, "AND", right_side)
-
+            expr = AndExpression(expr, right_side)
         return expr
 
     def visitNot_expression(self, ctx: SQLParser.Not_expressionContext):
         if ctx.NOT():
-            operand = self.visit(ctx.not_expression())
-            return UnaryExpression("NOT", operand)
+            expr = self.visit(ctx.not_expression())
+            return NotExpression(expr)
 
         return self.visit(ctx.predicate_expression())
 
@@ -133,9 +135,13 @@ class ASTBuilderVisitor(SQLParserVisitor):
             return self.visit(ctx.search_condition())
         return self.visit(ctx.predicate())
 
+    # no override for predicate
+    def visitPredicate(self, ctx:SQLParser.PredicateContext):
+        return self.visit(ctx.getChild(0))
     def visitComparison_predicate(self, ctx: SQLParser.Comparison_predicateContext):
 
         expr = self.visit(ctx.expression(0))
+
         operators = self.visit(ctx.operators())  # TODO : Could be only getText()
         if ctx.expression(1):
             right = self.visit(ctx.expression(1))
@@ -151,7 +157,7 @@ class ASTBuilderVisitor(SQLParserVisitor):
         return QuantifiedSubquery(quantifier, select_st)
 
     def visitOperators(self, ctx: SQLParser.OperatorsContext):
-        return ctx.getChild(0).getText()
+        return ctx.getText()
 
     def visitIn_predicate(self, ctx: SQLParser.In_predicateContext):
         expr = self.visit(ctx.expression())
@@ -167,7 +173,7 @@ class ASTBuilderVisitor(SQLParserVisitor):
         return [self.visit(expr) for expr in ctx.expression()]
 
     def visitBetween_predicate(self, ctx: SQLParser.Between_predicateContext):
-        expr = self.visit(ctx.expression())
+        expr = self.visit(ctx.expression(0))
         negated = ctx.NOT() is not None
         expr1 = self.visit(ctx.expression(1))
         expr2 = self.visit(ctx.expression(2))
@@ -189,20 +195,20 @@ class ASTBuilderVisitor(SQLParserVisitor):
         subquery = self.visit(ctx.derived_table())
         return ExistsExpression(subquery, negated)
 
-    # Expression
+    # no override for expression
 
     def visitOr_bitwise_expression(self, ctx: SQLParser.Or_bitwise_expressionContext):
         expr = self.visit(ctx.xor_bitwise_expression(0))
         for i in range(1, len(ctx.xor_bitwise_expression())):
             right_side = self.visit(ctx.xor_bitwise_expression(i))
-            expr = BinaryExpression(expr, "|", right_side)
+            expr = OrBitwiseExpression(expr, right_side)
         return expr
 
     def visitXor_bitwise_expression(self, ctx: SQLParser.Xor_bitwise_expressionContext):
         expr = self.visit(ctx.and_bitwise_expression(0))
         for i in range(1, len(ctx.and_bitwise_expression())):
             right_side = self.visit(ctx.and_bitwise_expression(i))
-            expr = BinaryExpression(expr, "^", right_side)
+            expr = XorBitwiseExpression(expr, right_side)
 
         return expr
 
@@ -210,7 +216,7 @@ class ASTBuilderVisitor(SQLParserVisitor):
         expr = self.visit(ctx.add_sub_expression(0))
         for i in range(1, len(ctx.add_sub_expression())):
             right_side = self.visit(ctx.add_sub_expression(i))
-            expr = BinaryExpression(expr, "&", right_side)
+            expr = AndBitwiseExpression(expr, right_side)
 
         return expr
 
@@ -219,7 +225,10 @@ class ASTBuilderVisitor(SQLParserVisitor):
         for i in range(1, len(ctx.mul_div_expression())):
             op = ctx.children[2 * i - 1].getText()
             right_side = self.visit(ctx.mul_div_expression(i))
-            expr = BinaryExpression(expr, op, right_side)
+            if op == "+":
+                expr = AddExpression(expr, right_side)
+            elif op == "-":
+                expr = SubExpression(expr, right_side)
 
         return expr
 
@@ -228,8 +237,12 @@ class ASTBuilderVisitor(SQLParserVisitor):
         for i in range(1, len(ctx.unary_expression())):
             right_side = self.visit(ctx.unary_expression(i))
             operator = ctx.children[2 * i - 1].getText()
-
-            expr = BinaryExpression(expr, operator, right_side)
+            if operator == "%":
+                expr = ModExpression(expr, right_side)
+            elif operator == "*":
+                expr = MulExpression(expr, right_side)
+            elif operator == "/":
+                expr = DivExpression(expr, right_side)
 
         return expr
 
@@ -245,7 +258,7 @@ class ASTBuilderVisitor(SQLParserVisitor):
         if ctx.expression():
             return self.visit(ctx.expression())
         elif ctx.full_column_name():
-            return self.visit(ctx.full_column_name())  # TODO : Could be node , check this
+            return self.visit(ctx.full_column_name())
         elif ctx.USER_VARIABLE():
             return Variable(ctx.USER_VARIABLE().getText())
         elif ctx.SYSTEM_VARIABLE():
@@ -255,11 +268,13 @@ class ASTBuilderVisitor(SQLParserVisitor):
         elif ctx.literal():
             return self.visit(ctx.literal())
         elif ctx.NULL():
-            return Literal("NULL")  # TODO : Check this
+            return Literal(ctx.NULL().getText())
         elif ctx.derived_table():
             return self.visit(ctx.derived_table())
         else:
             raise NotImplementedError(
                 f"Unsupported primary_expression: {ctx.getText()}"
             )
+
+
     # ! END OF ExpressionParser

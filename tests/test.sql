@@ -24,5 +24,51 @@
 --PRINT @VAR;
 --GO
 
---DELETE FROM emp WHERE id = 10;
+--DELETE FROM emp
+--a = 5
+--@x <> @y
+
+--@@ROWCOUNT > 0
+--a = 1 AND b = 2
+--a = 1 OR b = 2
+--a = 1 OR b = 2 AND c = 3
+
+--NOT a = 5
+----NOT a = 5
+--NOT NOT a = 5
+--(a = 1 OR b = 2) AND c = 3
+--a IN (1, 2, 3)
+--a NOT IN (10, 20)
+--a IN (SELECT id FROM t) -- TODO : This should be tested when select is finished
+
+
+
+
+--age BETWEEN 18 AND 65
+--salary NOT BETWEEN 1000 AND 5000
+--name LIKE 'A%'
+--name NOT LIKE '%test%'
+--deleted_at IS NULL
+--deleted_at IS NOT NULL
+
+--EXISTS (SELECT 1 FROM users)
+--NOT EXISTS (SELECT 1 FROM users)
+--salary > ALL (SELECT salary FROM employees)
+--price * quantity + tax
+--
+---5 + 10
+----5
+--a & b
+--a | b ^ c & d
+--(((a)))
+--a IN (a + b * c,- -5 , 5+ 10, a | b ^ c & d,(((a))))
+--a IN (1, 2) AND (b BETWEEN 3 AND 4 OR c IS NULL)
+--NOT (a = 1 AND b IN (SELECT id FROM t)) OR c IS NOT NULL
+-- ERRORS TESTS
+--a =
+--@``
+a == 5
 --DELETE FROM emp WHERE CURRENT OF cur1;
+
+
+

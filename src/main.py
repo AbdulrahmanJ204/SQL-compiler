@@ -5,7 +5,7 @@ from antlr4.error.DiagnosticErrorListener import DiagnosticErrorListener
 from generated import SQLLexer
 from generated import SQLParser
 
-from ast.ast_builder_visitor import ASTBuilderVisitor
+from sql_ast.ast_builder_visitor import ASTBuilderVisitor
 from visualizar import visualize_parse_tree
 
 
