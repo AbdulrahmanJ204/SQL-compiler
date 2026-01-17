@@ -3,13 +3,14 @@ from generated.SQLParserVisitor import SQLParserVisitor
 from sql_ast.ast_nodes.program import Program
 from sql_ast.ast_nodes.statements import DeleteStatement, WhereClause, SetStatement, StatementBlock
 from sql_ast.ast_nodes.expressions import Literal
-from sql_ast.ast_nodes.basic_nodes import Table, TableRef, ColumnRef
+from sql_ast.ast_nodes.basic_nodes import TableRef, ColumnRef
 from sql_ast.visitors.basic_visitor import BasicVisitor
+from sql_ast.visitors.cursor_visitor import CursorVisitor
 from sql_ast.visitors.expression_visitor import ExpressionVisitor
 from sql_ast.visitors.select_visitor import SelectVisitor
 
 
-class ASTBuilderVisitor(ExpressionVisitor, BasicVisitor,SelectVisitor  ):
+class ASTBuilderVisitor(ExpressionVisitor, BasicVisitor, SelectVisitor, CursorVisitor):
     ###################################################################
     #             SQLParser Visit.
     ###################################################################
@@ -34,15 +35,11 @@ class ASTBuilderVisitor(ExpressionVisitor, BasicVisitor,SelectVisitor  ):
         table = self.visit(ctx.full_table_name())
         return SetStatement(table, on)
 
-    ###################################################################
-    #             ! END OF SQLParser Visit.
-    ###################################################################
-
     def visitDelete_statement(self, ctx: SQLParser.Delete_statementContext):
         # TODO : reconstruct this.
         table_ctx = ctx.table_source()
         table_name = table_ctx.getText()
-        table = Table(table_name)
+        table = TableRef([table_name])
 
         where = None
         if ctx.delete_and_update_where_clause():
@@ -53,4 +50,3 @@ class ASTBuilderVisitor(ExpressionVisitor, BasicVisitor,SelectVisitor  ):
             top = self.visit(ctx.top_clause())
 
         return DeleteStatement(table, where, top)
-

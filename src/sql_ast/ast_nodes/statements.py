@@ -28,10 +28,13 @@ class DeleteStatement(ASTNode):
 
 
 class WhereClause(ASTNode):
-    def __init__(self, condition):
+    def __init__(self, condition, is_cursor = False):
         self.condition = condition
+        self.is_cursor = is_cursor
     def print(self, spacer="  ", level=0):
         self.self_print(spacer * level )
+        if self.is_cursor:
+            print(spacer * (level+2) , "CURRENT OF :")
         self.condition.print(spacer , level + 1)
 
 class SetStatement(ASTNode):

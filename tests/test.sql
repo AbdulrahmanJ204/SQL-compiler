@@ -68,17 +68,17 @@
 --a =
 --@``
 --a == 5
---DELETE FROM emp WHERE CURRENT OF cur1;
+DELETE FROM emp WHERE CURRENT OF cur1;
 
+--select ``
 
-
-USE AdventureWorks2022;
-GO
-
-SELECT ProductID, OrderQty, SUM(LineTotal) AS Total
-FROM Sales.SalesOrderDetail
-WHERE UnitPrice < $5.00
-GROUP BY ProductID, OrderQty
-ORDER BY ProductID, OrderQty
+--USE AdventureWorks2022;
+--GO
+--
+--SELECT ProductID, OrderQty, SUM(LineTotal) AS Total
+--FROM Sales.SalesOrderDetail
+--WHERE UnitPrice < $5.00
+--GROUP BY ProductID, OrderQty
+--ORDER BY ProductID, OrderQty
 --OPTION (HASH GROUP, FAST 10);
-GO
+--GO

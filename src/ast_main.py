@@ -123,7 +123,7 @@ def main():
     ast = visitor.visit(tree)
 
     print("\nAST:")
-    ast.print()
+    ast.print("    ")
     # visualize_parse_tree(parser, tree, title="T-SQL Parse Tree")
 
 

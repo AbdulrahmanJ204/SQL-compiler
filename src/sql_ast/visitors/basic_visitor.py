@@ -17,18 +17,33 @@ class BasicVisitor(SQLParserVisitor):
     def visitDelete_and_update_where_clause(self, ctx: SQLParser.Delete_and_update_where_clauseContext):
         if ctx.where_clause():
             return self.visit(ctx.where_clause())
-        cursor = ctx.cursor_name().getText()
-        # TODO : Check Cursor Name
+        cursor = self.visit(ctx.cursor_name())
         return WhereClause(
-            Literal(f"CURRENT OF {cursor}")
+            cursor,
+            is_cursor=True
         )
 
+    # JOIN
     def visitJoin_clause(self, ctx: SQLParser.Join_clauseContext):
-        join_type = ctx.join_type().getText()
+        join_type = self.visit(ctx.join_type())
         table = self.visit(ctx.table_source_item())
         join_condition = self.visit(ctx.join_condition())
-        # TODO : Should Return Join Node
-        return ""
+        return Join(join_type, table, join_condition)
+
+    def visitJoin_condition(self, ctx: SQLParser.Join_conditionContext):
+        return self.visit(ctx.search_condition())
+
+    def visitJoin_type(self, ctx: SQLParser.Join_typeContext):
+        if ctx.CROSS():
+            return JoinType("CROSS")
+        if ctx.FULL():
+            return JoinType("FULL")
+        if ctx.LEFT():
+            return JoinType("LEFT")
+        if ctx.RIGHT():
+            return JoinType("RIGHT")
+
+        return JoinType("INNER")
 
     def visitHaving_clause(self, ctx: SQLParser.Having_clauseContext):
         condition = self.visit(ctx.search_condition())
@@ -87,3 +102,9 @@ class BasicVisitor(SQLParserVisitor):
             args.append(FunctionArg(expr, alias))
 
         return args
+
+    def visitTable_source_item(self, ctx:SQLParser.Table_source_itemContext):
+        as_alias = self.visit(ctx.as_alias()) if ctx.as_alias() else None
+
+        if ctx.full_table_name():
+            return self.visit(ctx.full_table_name())

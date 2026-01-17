@@ -1,7 +1,6 @@
-from pip._internal import operations
-
 from .ast_node import ASTNode
 from .expressions import BinaryExpression
+from .basic_nodes import ExpressionAlaisNode
 
 
 class SelectStatement(ASTNode):
@@ -99,17 +98,8 @@ class TableStarSelectItem(ASTNode):
         self.table.print(spacer, level + 1)
 
 
-class ExpressionSelectItem(ASTNode):
-    def __init__(self, expression, alias=None):
-        self.expression = expression
-        self.alias = alias
-
-    def print(self, spacer="  ", level=0):
-        self.self_print(spacer * level)
-        self.expression.print(spacer, level + 1)
-        if self.alias:
-            print(spacer * (level + 1), "Alias:")
-            self.alias.print(spacer, level + 2)
+class ExpressionSelectItem(ExpressionAlaisNode):
+    pass
 
 
 class AssignmentSelectItem(BinaryExpression):
