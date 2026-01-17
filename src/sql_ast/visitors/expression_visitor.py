@@ -157,8 +157,8 @@ class ExpressionVisitor(SQLParserVisitor):
             return self.visit(ctx.expression())
         elif ctx.full_column_name():
             return self.visit(ctx.full_column_name())
-        elif ctx.user_variable():
-            return Variable(self.visit(ctx.user_variable()))
+        elif ctx.USER_VARIABLE():
+            return Variable(ctx.USER_VARIABLE().getText())
         elif ctx.SYSTEM_VARIABLE():
             return Variable(ctx.SYSTEM_VARIABLE().getText())
         elif ctx.function_call():

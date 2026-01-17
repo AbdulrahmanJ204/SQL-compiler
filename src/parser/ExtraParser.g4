@@ -4,5 +4,4 @@ options {
 }
 
 user_variable : USER_VARIABLE;
-
-identifier: IDENTIFIER;
+system_variable: SYSTEM_VARIABLE;

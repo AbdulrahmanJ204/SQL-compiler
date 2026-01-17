@@ -4,7 +4,7 @@ options {
 	tokenVocab = SQLLexer;
 }
 
-import ExpressionParser, SQLParser,ExtraParser;
+import ExpressionParser, SQLParser;
 
 where_clause: WHERE search_condition;
 delete_and_update_where_clause
@@ -39,7 +39,7 @@ join_type: INNER?
 table_source: table_source_item join_clause*;
 table_source_list: table_source (COMMA table_source)*;
 table_source_item
-    : (full_table_name  | derived_table | user_variable) as_alias?
+    : (full_table_name  | derived_table | USER_VARIABLE) as_alias?
     ;
 
 derived_table
@@ -48,7 +48,7 @@ derived_table
 
 as_alias: AS? expression;
 
-full_table_name: identifier (DOT identifier)*;
+full_table_name: IDENTIFIER (DOT IDENTIFIER)*;
 
 top_clause: TOP LPAREN expression RPAREN PERCENT?;
 
@@ -56,10 +56,10 @@ set_operators: (UNION ALL?) | EXCEPT | INTERSECT;
 
 
 
-full_column_name: (identifier | DELETED | INSERTED) (DOT identifier)*;
+full_column_name: (IDENTIFIER | DELETED | INSERTED) (DOT IDENTIFIER)*;
 column_list: LPAREN full_column_name (COMMA full_column_name)* RPAREN;
 
-user_variable_list: user_variable (COMMA user_variable)*;
+user_variable_list: USER_VARIABLE (COMMA USER_VARIABLE)*;
 
 operators: EQ | NEQ | LTE | GTE | LT | GT ;
 
@@ -103,7 +103,7 @@ varbinary_data_type:VARBINARY (LPAREN (literal|MAX) RPAREN)?;
 time_data_type: TIME (LPAREN literal RPAREN)? | DATETIME2 (LPAREN literal RPAREN)? | DATETIMEOFFSET (LPAREN literal RPAREN)?;
 
 function_call
-    : (identifier DOT)? (identifier|MAX) LPAREN function_arguments? RPAREN
+    : (IDENTIFIER DOT)? (IDENTIFIER|MAX) LPAREN function_arguments? RPAREN
     ;
 
 function_arguments
@@ -130,7 +130,7 @@ computed_column_definition
 
 
 column_constraint
-    : (CONSTRAINT identifier)? column_constraint_body
+    : (CONSTRAINT IDENTIFIER)? column_constraint_body
     ;
 column_constraint_body
     : DEFAULT default_value_expr
@@ -165,7 +165,7 @@ literal_with_optional_parentheses
     ;
 
 table_constraint
-    : CONSTRAINT identifier? constraint_body
+    : CONSTRAINT IDENTIFIER? constraint_body
     | constraint_body
     ;
 
@@ -195,7 +195,7 @@ check_constraint
 default_constraint
     : DEFAULT default_value_expr FOR full_column_name;
 
-user_name : identifier  ;
+user_name : IDENTIFIER  ;
 
 function_name : full_table_name  ;
 
@@ -206,7 +206,7 @@ function_parameter_list
     : function_parameter (COMMA function_parameter)*;
 
 function_parameter
-    : user_variable AS?  datatype  (NULL | NOT NULL)? (EQ default_value)? (READONLY)?;
+    : USER_VARIABLE AS?  datatype  (NULL | NOT NULL)? (EQ default_value)? (READONLY)?;
 
 default_value
     : literal
@@ -216,7 +216,7 @@ default_value
 return_data_type
     : column_type | TABLE;
 
-index_name : identifier;
+index_name : IDENTIFIER;
 
 
 view_attribute
@@ -235,7 +235,7 @@ table_type_element
     | table_constraint
     ;
 
-go_statement: ((USE identifier )| GO) SEMI?;
+go_statement: ((USE IDENTIFIER )| GO) SEMI?;
 
 statement_block: BEGIN SEMI? (statement)+ END SEMI?;
 
@@ -250,5 +250,5 @@ literal: NUMBER_LITERAL |TRUE |FALSE |BIT_STRING_LITERAL |MONEY_LITERAL |HEX_LIT
 
 function_return_type
     : return_data_type
-    | user_variable  table_type_definition
+    | USER_VARIABLE  table_type_definition
     ;*/

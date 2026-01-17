@@ -9,10 +9,10 @@ from ..ast_nodes.cursor_nodes import CursorName
 class CursorVisitor(SQLParserVisitor):
 
     def visitCursor_name(self, ctx: SQLParser.Cursor_nameContext):
-        if ctx.user_variable():
-            return CursorName(name=self.visit(ctx.user_variable()).getText())
+        if ctx.USER_VARIABLE():
+            return CursorName(name=ctx.USER_VARIABLE().getText())
 
         return CursorName(
-            name=self.visit(ctx.identifier()),
+            name=ctx.IDENTIFIER().getText(),
             is_global=ctx.GLOBAL() is not None
         )

@@ -6,7 +6,7 @@ options {
 }
 
 
-import BasicParser, SelectParser,ExtraParser;
+import BasicParser, SelectParser;
 
 declare_cursor: DECLARE cursor_name set_declare_cursor_item SEMI?;
 
@@ -26,13 +26,13 @@ open_cursor: OPEN cursor_name SEMI?;
 
 fetch_row: FETCH   ( (
         NEXT | PRIOR | FIRST | LAST
-        | ABSOLUTE ( literal | user_variable )
-        | RELATIVE ( literal | user_variable )
+        | ABSOLUTE ( literal | USER_VARIABLE )
+        | RELATIVE ( literal | USER_VARIABLE )
     )? FROM )?
     cursor_name (INTO user_variable_list*)? SEMI?;
 
 deallocate_cursor: DEALLOCATE cursor_name SEMI?;
 
-cursor_name: (GLOBAL? identifier) | user_variable;
+cursor_name: (GLOBAL? IDENTIFIER) | USER_VARIABLE;
 
 

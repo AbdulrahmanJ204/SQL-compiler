@@ -2,7 +2,7 @@ parser grammar CreateParser;
 
 options { tokenVocab = SQLLexer; }
 
-import BasicParser,ExtraParser;
+import BasicParser;
 
 create_statement
     : create_table
@@ -72,7 +72,7 @@ create_view
     ;
 
 view_column_list
-    : LPAREN identifier (COMMA identifier)* RPAREN;
+    : LPAREN IDENTIFIER (COMMA IDENTIFIER)* RPAREN;
 
 view_with_attributes
     : WITH view_attribute (COMMA view_attribute)*;
@@ -100,14 +100,14 @@ create_user_option
 default_language_value
     : NONE
     | literal
-    | identifier
+    | IDENTIFIER
     ;
 
-login_name: identifier;
+login_name: IDENTIFIER;
 
 sid_value
     : literal
-    | identifier
+    | IDENTIFIER
     ;
 /*create_function
     : CREATE (OR ALTER)? FUNCTION function_name function_parameters

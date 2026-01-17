@@ -2,7 +2,7 @@ parser grammar AlterParser;
 
 options { tokenVocab = SQLLexer; }
 
-import BasicParser,ExtraParser;
+import BasicParser;
 alter_statement
     : alter_table
     | alter_index
@@ -54,7 +54,7 @@ table_add_item
     ;
 
 table_rename_column
-    : RENAME COLUMN full_column_name TO identifier
+    : RENAME COLUMN full_column_name TO IDENTIFIER
     ;
 
 alter_index
@@ -93,11 +93,11 @@ alter_user
     : ALTER USER user_name WITH user_option (COMMA user_option)* SEMI?;
 
 user_option
-    : identifier EQ identifier
-    | DEFAULT_SCHEMA EQ (identifier | NULL)
-    | LOGIN EQ identifier
+    : IDENTIFIER EQ IDENTIFIER
+    | DEFAULT_SCHEMA EQ (IDENTIFIER | NULL)
+    | LOGIN EQ IDENTIFIER
     | PASSWORD EQ literal (OLD_PASSWORD EQ literal)?
-    | DEFAULT_LANGUAGE EQ (NONE | literal | identifier)
+    | DEFAULT_LANGUAGE EQ (NONE | literal | IDENTIFIER)
     | ALLOW_ENCRYPTED_VALUE_MODIFICATIONS EQ (ON | OFF);
 
 /*alter_function

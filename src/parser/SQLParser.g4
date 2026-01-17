@@ -10,7 +10,6 @@ import ExtraParser,SelectParser , InsertParser ,DeleteParser,UpdateParser,AlterP
 program: statement* EOF;
 
 
-
 ddl_statement:alter_statement | create_statement | drop_statement;
 dml_statement: select_statement | insert_statement | delete_statement | update_statement;
 variable_statement: declare_var | set_variable;

@@ -4,7 +4,7 @@ options {
 	tokenVocab = SQLLexer;
 }
 
-import BasicParser, SelectParser,ExtraParser;
+import BasicParser, SelectParser;
 
 search_condition: or_expression;
 
@@ -61,7 +61,7 @@ primary_expression:
 	| function_call
 	| literal
 	| NULL
-	| user_variable
+	| USER_VARIABLE
 	| SYSTEM_VARIABLE
 	| derived_table;
 

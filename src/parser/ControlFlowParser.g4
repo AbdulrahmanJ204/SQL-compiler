@@ -4,7 +4,7 @@ options {
 	tokenVocab = SQLLexer;
 }
 
-import ExpressionParser, SQLParser, BasicParser,ExtraParser;
+import ExpressionParser, SQLParser, BasicParser;
 
 
 control_flow_statement: while_clause|statement_block | if_clause| break_statement|continue_statement;

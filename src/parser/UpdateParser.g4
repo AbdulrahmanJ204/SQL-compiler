@@ -3,10 +3,10 @@ options {
 	tokenVocab = SQLLexer;
 }
 
-import BasicParser, OutputParser, CursorParser,ExtraParser;
+import BasicParser, OutputParser, CursorParser;
 
 update_statement :
-with_cte? UPDATE top_clause? (full_table_name| user_variable) SET assignment_list output_clause? (FROM table_source_list)? delete_and_update_where_clause? SEMI? ;
+with_cte? UPDATE top_clause? (full_table_name| USER_VARIABLE) SET assignment_list output_clause? (FROM table_source_list)? delete_and_update_where_clause? SEMI? ;
 
 assignment_list: assignment (COMMA assignment)*;
 
@@ -38,7 +38,7 @@ write_assignment
     ;
 
 udt_method_assignment
-    : full_column_name DOT identifier
+    : full_column_name DOT IDENTIFIER
       LPAREN argument_list? RPAREN;
 
 argument_list
@@ -46,7 +46,7 @@ argument_list
 
 target
     : full_column_name
-    | user_variable
+    | USER_VARIABLE
     ;
 source
     : expression | DEFAULT
