@@ -36,8 +36,8 @@ join_type: INNER?
     | CROSS
     ;
 
-table_source: table_source_item join_clause*;
 table_source_list: table_source (COMMA table_source)*;
+table_source: table_source_item join_clause*;
 table_source_item
     : (full_table_name  | derived_table | USER_VARIABLE) as_alias?
     ;

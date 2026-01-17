@@ -2,11 +2,7 @@ import time
 
 from generated.SQLParser import SQLParser
 from generated.SQLParserVisitor import SQLParserVisitor
-from .basic_visitor import BasicVisitor
-from .expression_visitor import ExpressionVisitor
-from ..ast_nodes.expression_nodes import BinaryExpression
-from ..ast_nodes.select_nodes import SelectStatement, SelectQuantifier, TopSpec, StarSelectItem, TableStarSelectItem, \
-    AssignmentSelectItem, ExpressionSelectItem, QuerySpecification, QueryExpression
+from ..ast_nodes.select_nodes import *
 
 
 class SelectVisitor(SQLParserVisitor):
@@ -18,18 +14,20 @@ class SelectVisitor(SQLParserVisitor):
         return SelectStatement(query_expression, with_cte, order_by)
 
     def visitQuery_expression(self, ctx: SQLParser.Query_expressionContext):
-        if ctx.query_expression():
+        if ctx.LPAREN():
             left = self.visit(ctx.query_expression())
         else:
-            left = self.visit(ctx.query_specification(0))
-
-        operations = []
-
-        for i, op in enumerate(ctx.set_operators()):
-            right = self.visit(ctx.query_specification(i + 1))
-            operations.append((self.visit(op), right))
+            left = self.visit(ctx.query_specification())
+        operations = self.visit(ctx.set_operators_list()) if ctx.set_operators_list() else None
 
         return QueryExpression(left, operations)
+
+    def visitSet_operators_list(self, ctx: SQLParser.Set_operators_listContext):
+        lst = []
+        for i, st_op in enumerate(ctx.set_operators()):
+            qu = self.visit(ctx.query_specification(i))
+            lst.append(SelectSetOperation(self.visit(st_op), qu))
+        return SelectSetOperationsList(lst)
 
     def visitQuery_specification(self, ctx: SQLParser.Query_specificationContext):
         modifier = self.visit(ctx.select_modifier())
@@ -53,40 +51,37 @@ class SelectVisitor(SQLParserVisitor):
 
         return SelectQuantifier(quantifier, top)
 
-    def visitSelect_top_clause(self, ctx: SQLParser.Select_top_clauseContext):
-        value = self.visit(ctx.top_count())
-        percent = ctx.PERCENT() is not None
-        return TopSpec(value, percent)
-
-    def visitTop_count(self, ctx: SQLParser.Top_countContext):
-        return self.visit(ctx.expression())
-
     def visitSelect_list(self, ctx: SQLParser.Select_listContext):
         if ctx.STAR():
-            return [StarSelectItem()]
+            return SelectList([Star()])
+        return SelectList(self.visit(ctx.select_list_item_list()))
 
-        items = []
-        for item_ctx in ctx.select_list_item():
-            items.append(self.visit(item_ctx))
+    def visitSelect_list_item_list(self, ctx: SQLParser.Select_list_item_listContext):
+        return [self.visit(item_ctx) for item_ctx in ctx.select_list_item()]
 
-        return items
+    def visitFullTableDotStar(self, ctx: SQLParser.FullTableDotStarContext):
+        return TableStarSelectItem(self.visit(ctx.full_table_name()))
 
-    def visitSelect_list_item(self, ctx: SQLParser.Select_list_itemContext):
-        if ctx.STAR():
-            return StarSelectItem()
+    def visitStartSelectItem(self, ctx: SQLParser.StartSelectItemContext):
+        return Star()
 
-        if ctx.full_table_name():
-            table = self.visit(ctx.full_table_name())
-            return TableStarSelectItem(table)
-
+    def visitSelectListElement(self, ctx: SQLParser.SelectListElementContext):
         return self.visit(ctx.select_list_element())
 
     def visitSelect_list_element(self, ctx: SQLParser.Select_list_elementContext):
-        if ctx.getChildCount() <= 2 :
+        if ctx.getChildCount() <= 2:
             expr = self.visit(ctx.expression(0))
             alias = self.visit(ctx.as_alias()) if ctx.as_alias() else None
-            return ExpressionSelectItem(expr, alias)
+            return ExpressionAlaisNode(expr, alias)
         left = self.visit(ctx.expression(0))
         right = self.visit(ctx.expression(1))
         op = ctx.getChild(1).getText()
         return AssignmentSelectItem(left, op, right)
+
+    def visitTop_count(self, ctx: SQLParser.Top_countContext):
+        return self.visit(ctx.expression())
+
+    def visitSelect_top_clause(self, ctx: SQLParser.Select_top_clauseContext):
+        value = self.visit(ctx.top_count())
+        percent = ctx.PERCENT() is not None
+        return TopSpec(value, percent)

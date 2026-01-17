@@ -18,16 +18,36 @@ class SelectStatement(ASTNode):
             self.order_by.print(spacer, level + 1)
 
 
-class QueryExpression(ASTNode):
-    def __init__(self, left, operations=None):
-        self.left = left  # QuerySpecification or QueryExpression
-        self.operations = operations or []
+class SelectSetOperationsList(ASTNode):
+    def __init__(self, lst):
+        self.lst = lst
 
     def print(self, spacer="  ", level=0):
-        self.self_print(spacer * level)
+        if len(self.lst) >0:
+            print(spacer * level, "SET OPERATIONS")
+        for item in self.lst:
+            item.print(spacer, level + 1)
+
+
+class SelectSetOperation(ASTNode):
+    def __init__(self, set_op, query_spec):
+        self.set_op = set_op
+        self.query_spec = query_spec
+
+    def print(self, spacer="  ", level=0):
+        self.set_op.print(spacer, level + 1)
+        self.query_spec.print(spacer, level + 1)
+
+
+class QueryExpression(ASTNode):
+    def __init__(self, left, operations=None):
+        self.left = left
+        self.operations = operations
+
+    def print(self, spacer="  ", level=0):
         self.left.print(spacer, level + 1)
-        for op in self.operations:
-            op.print(spacer, level + 1)
+        if self.operations:
+            self.operations.print(spacer, level + 1)
 
 
 class QuerySpecification(ASTNode):
@@ -42,13 +62,13 @@ class QuerySpecification(ASTNode):
         self.into = into
 
     def print(self, spacer="  ", level=0):
-        self.self_print(spacer * level)
+        # self.self_print(spacer * level)
         self.modifier.print(spacer, level + 1)
-        print(spacer * (level + 1), "Items :")
-        for item in self.select_list:
-            item.print(spacer, level + 2)
+        print(spacer * (level + 1), "Items:")
+        self.select_list.print(spacer, level + 2)
 
         if self.from_:
+            print(spacer * (level + 1), "From:")
             self.from_.print(spacer, level + 1)
         if self.where:
             self.where.print(spacer, level + 1)
@@ -66,8 +86,8 @@ class SelectQuantifier(ASTNode):
         self.top = top  # TopSpec | None
 
     def print(self, spacer="  ", level=0):
-        to_print = self.quantifier if self.quantifier is not None else ""
-        self.self_print(spacer * level, to_print)
+        if self.quantifier:
+            print(spacer * level, self.quantifier)
         if self.top:
             self.top.print(spacer, level + 1)
 
@@ -78,15 +98,15 @@ class TopSpec(ASTNode):
         self.percent = percent
 
     def print(self, spacer="  ", level=0):
-        to_print = "PERCENT" if self.percent else ""
-        self.self_print(spacer * level, to_print)
+        to_print = "TOP PERCENT" if self.percent else "TOP"
+        print(spacer * level + to_print)
         self.value.print(spacer, level + 1)
 
 
-class StarSelectItem(ASTNode):
+class Star(ASTNode):
 
     def print(self, spacer="  ", level=0):
-        self.self_print(spacer * level)
+        print(spacer * level , "STAR")
 
 
 class TableStarSelectItem(ASTNode):
@@ -94,7 +114,7 @@ class TableStarSelectItem(ASTNode):
         self.table = table
 
     def print(self, spacer="  ", level=0):
-        self.self_print(spacer * level)
+        print(spacer * level, "Table.*")
         self.table.print(spacer, level + 1)
 
 
@@ -104,3 +124,12 @@ class ExpressionSelectItem(ExpressionAlaisNode):
 
 class AssignmentSelectItem(BinaryExpression):
     pass
+
+
+class SelectList(ASTNode):
+    def __init__(self, items):
+        self.items = items
+
+    def print(self, spacer="  ", level=0):
+        for item in self.items:
+            item.print(spacer, level)

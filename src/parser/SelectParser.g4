@@ -12,15 +12,16 @@ select_statement
 
 query_expression
     : query_specification
-      ( set_operators query_specification )*
+      set_operators_list
     | LPAREN query_expression RPAREN
-      ( set_operators query_specification )*
+      set_operators_list
     ;
 
 
+set_operators_list : (set_operators query_specification)*;
 
-query_specification
-    : SELECT select_modifier select_list
+query_specification:
+ SELECT select_modifier select_list
       (INTO full_table_name)?
       (FROM table_source_list)?
       where_clause?
@@ -28,15 +29,27 @@ query_specification
       having_clause?
     ;
 
-select_list
-    : STAR
-    | select_list_item (COMMA select_list_item)*
+select_modifier
+    :
+    | ALL
+    | DISTINCT
+    | ALL select_top_clause
+    | DISTINCT select_top_clause
+    | select_top_clause
+
     ;
 
+select_list
+    : STAR
+    | select_list_item_list
+    ;
+
+select_list_item_list : select_list_item (COMMA select_list_item)*;
+
 select_list_item
-    : full_table_name DOT STAR
-    | STAR
-    | select_list_element
+    : full_table_name DOT STAR # FullTableDotStar
+    | STAR # StartSelectItem
+    | select_list_element # SelectListElement
     ;
 
 select_list_element
@@ -51,13 +64,4 @@ top_count
     ;
 select_top_clause: TOP top_count PERCENT?;
 
-
-select_modifier
-    :
-    | ALL
-    | DISTINCT
-    | ALL select_top_clause
-    | DISTINCT select_top_clause
-    | select_top_clause
-    ;
 

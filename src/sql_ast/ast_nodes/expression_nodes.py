@@ -1,29 +1,11 @@
 from .ast_node import ASTNode
+from .basic_nodes import SingleExpressionNode
 
 
-class Literal(ASTNode):
-    def __init__(self, value):
-        self.value = value
-
-    def print(self, spacer="  ", level=0):
-        self.self_print(spacer * level, self.value)
 
 
-class NotExpression(ASTNode):
-    def __init__(self, expr):
-        self.expr = expr
-
-    def print(self, spacer="  ", level=0):
-        self.self_print(spacer * level)
-        self.expr.print(spacer, level + 1)
 
 
-class Variable(ASTNode):
-    def __init__(self, name):
-        self.name = name
-
-    def print(self, spacer="  ", level=0):
-        self.self_print(spacer * level, self.name)
 
 
 class BinaryExpression(ASTNode):
@@ -180,3 +162,6 @@ class ExistsExpression(ASTNode):
         to_print = "NOT EXISTS " if self.negated else " EXISTS "
         self.self_print(spacer * level, to_print)
         self.subquery.print(spacer, level + 1)
+
+class NotExpression(SingleExpressionNode):
+    pass
