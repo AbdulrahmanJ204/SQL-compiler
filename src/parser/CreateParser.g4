@@ -82,12 +82,22 @@ view_with_attributes
 
 
 create_user
-    : CREATE USER user_name create_user_core SEMI?;
+    : CREATE USER user_name create_user_core? SEMI?;
 
 create_user_core
     : (FOR | FROM)? LOGIN login_name with_user_options?
     | WITH PASSWORD EQ literal (COMMA create_user_option)*
     | WITHOUT LOGIN with_user_options?
+    | with_limited_user_options
+    ;
+
+limited_user_option
+    : DEFAULT_SCHEMA EQ full_table_name
+    | ALLOW_ENCRYPTED_VALUE_MODIFICATIONS EQ (ON | OFF)
+    ;
+
+with_limited_user_options
+    : WITH limited_user_option (COMMA limited_user_option)*
     ;
 
 with_user_options
