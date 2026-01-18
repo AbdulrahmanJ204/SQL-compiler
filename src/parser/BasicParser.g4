@@ -289,8 +289,6 @@ function_parameter_list
 function_parameter
     : USER_VARIABLE AS?  datatype  (NULL | NOT NULL)? (EQ default_value)? (READONLY)?;
 
-
-
 default_value
     : literal
     | NULL
@@ -320,3 +318,19 @@ function_return_type
     | USER_VARIABLE  table_type_definition
     ;*/
 
+index_common_option
+    : PAD_INDEX EQ (ON | OFF)
+    | FILLFACTOR EQ expression
+    | IGNORE_DUP_KEY EQ (ON | OFF)
+    | ALLOW_ROW_LOCKS EQ (ON | OFF)
+    | ALLOW_PAGE_LOCKS EQ (ON | OFF)
+    | DROP_EXISTING EQ (ON | OFF)
+    | ONLINE EQ online_option
+    | MAXDOP EQ expression
+    | RESUMABLE EQ (ON | OFF)
+    | MAX_DURATION EQ expression (MINUTES)?
+    ;
+partition_range
+    : NUMBER_LITERAL
+    | NUMBER_LITERAL TO NUMBER_LITERAL
+    ;

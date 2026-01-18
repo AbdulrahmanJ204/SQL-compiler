@@ -31,8 +31,8 @@ create_table_element
     ;
 
 create_index
-    : CREATE UNIQUE? index_clustering? INDEX index_name
-      ON full_table_name index_column_list
+    : CREATE UNIQUE? index_clustering? COLUMNSTORE? INDEX index_name
+      ON full_table_name index_column_list?
       include_clause?
       where_clause_for_index?
       index_with_clause?
@@ -68,17 +68,10 @@ index_with_clause
     : WITH LPAREN index_option (COMMA index_option)* RPAREN;
 
 index_option
-    : PAD_INDEX EQ (ON | OFF)
-    | FILLFACTOR EQ expression
-    | IGNORE_DUP_KEY EQ (ON | OFF)
-    | ALLOW_ROW_LOCKS EQ (ON | OFF)
-    | ALLOW_PAGE_LOCKS EQ (ON | OFF)
-    | DROP_EXISTING EQ (ON | OFF)
+    : index_common_option
     | DATA_COMPRESSION EQ (NONE | ROW | PAGE)
-    | XML_COMPRESSION EQ(ON | OFF)
-    | ONLINE EQ(ON | OFF)
+    | XML_COMPRESSION EQ (ON | OFF)
     ;
-
 
 create_view
     : CREATE VIEW full_table_name view_column_list?
