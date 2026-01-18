@@ -36,7 +36,16 @@ create_index
       include_clause?
       where_clause_for_index?
       index_with_clause?
+      index_on_clause?
       SEMI?
+    ;
+
+index_on_clause : ON partition_target;
+
+partition_target
+    : IDENTIFIER LPAREN full_column_name RPAREN
+    | IDENTIFIER
+    | DEFAULT
     ;
 
 index_clustering
