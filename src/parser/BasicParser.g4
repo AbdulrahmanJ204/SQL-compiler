@@ -4,7 +4,7 @@ options {
 	tokenVocab = SQLLexer;
 }
 
-import ExpressionParser, SQLParser;
+import ExpressionParser, SQLParser,CreateParser;
 
 where_clause: WHERE search_condition;
 delete_and_update_where_clause
@@ -162,8 +162,8 @@ column_constraint
     ;
 column_constraint_body
     : default_col_constraint
-    | PRIMARY KEY
-    | unique_constraint
+    | pk_col_constraint
+    | unique_col_constraint
     | single_word_constrain
     | identity_col_constraint
     | col_foreign_key_constraint
@@ -176,21 +176,13 @@ single_word_constrain:
     ;
 
 
+pk_col_constraint: PRIMARY KEY; // clusterd by default
+unique_col_constraint: UNIQUE ;
 
 identity_col_constraint: IDENTITY (LPAREN NUMBER_LITERAL COMMA NUMBER_LITERAL RPAREN)?;
 check_constraint
     : CHECK LPAREN search_condition RPAREN ;
-pk_constraint
-    : PRIMARY KEY (CLUSTERED | NONCLUSTERED)?
-      LPAREN index_column (COMMA index_column)* RPAREN
-      index_with_clause?
-    ;
 
-unique_constraint
-    : UNIQUE (CLUSTERED | NONCLUSTERED)?
-      LPAREN index_column (COMMA index_column)* RPAREN
-      index_with_clause?
-    ;
 col_foreign_key_constraint: (FOREIGN KEY)? REFERENCES full_table_name column_list;
 
 
@@ -213,21 +205,6 @@ niladic_function
     ;
 
 
-literal_with_optional_parentheses
-    : literal
-    | paren_literal
-    ;
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -238,16 +215,25 @@ table_constraint
 
 // no override
 table_constraint_body
-    : pk_constraint
+    : pk_table_constraint
     | unique_table_constraint
     | fk_table_constraint
     | check_constraint
     | default_table_constraint
     ;
 
+pk_table_constraint
+    : PRIMARY KEY (CLUSTERED | NONCLUSTERED)?
+      index_column_list
+      index_with_clause?
+    ;
 
-unique_table_constraint:
-unique_constraint column_list;
+unique_table_constraint
+    : UNIQUE (CLUSTERED | NONCLUSTERED)?
+      index_column_list
+      index_with_clause?
+    ;
+
 
 fk_table_constraint
     : FOREIGN KEY
