@@ -47,13 +47,13 @@ select_list
 select_list_item_list : select_list_item (COMMA select_list_item)*;
 
 select_list_item
-    : full_table_name DOT STAR # FullTableDotStar
-    | STAR # StartSelectItem
-    | select_list_element # SelectListElement
+    : full_table_name DOT STAR
+    | STAR
+    | select_list_element
     ;
 
 select_list_element
-    : expression as_alias?
+    : expression_alias
     | expression (EQ | PLUS_EQ | MINUS_EQ | STAR_EQ | SLASH_EQ | PERCENT_EQ| AMPERSAND_EQ | CARET_EQ | PIPE_EQ) expression
     ;
 

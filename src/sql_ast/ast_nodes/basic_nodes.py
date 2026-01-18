@@ -147,19 +147,16 @@ class ColumnOrTable(ASTNode):
 
 class FunctionCall(ASTNode):
     def __init__(self, name, args=None, schema=None):
-        self.schema = schema  # str | None
-        self.name = name  # str
-        self.args = args or []  # list[FunctionArg] | ["*"]
+        self.schema = schema
+        self.name = name
+        self.args = args
 
     def print(self, spacer="  ", level=0):
         full_name = f"{self.schema}.{self.name}" if self.schema else self.name
         self.self_print(spacer * level, full_name)
 
-        if self.args == ["*"]:
-            print(spacer * (level + 1) + " -- *")
-        else:
-            for arg in self.args:
-                arg.print(spacer, level + 1)
+        if self.args:
+            self.args.print(spacer, level + 1)
 
 
 class FunctionArg(ExpressionAlaisNode):
@@ -267,9 +264,10 @@ class DataType(ASTNode):
         self.params = params
 
     def print(self, spacer="  ", level=0):
-        print(spacer * level,f"DataType:  {self.name}")
+        print(spacer * level, f"DataType:  {self.name}")
         if self.params:
             self.params.print(spacer, level + 1)
+
 
 class ParenLiteralMax(ASTNode):
     def __init__(self, value, is_max=False):

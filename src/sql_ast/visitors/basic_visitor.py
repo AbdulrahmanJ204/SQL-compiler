@@ -5,7 +5,7 @@ from generated.SQLParserVisitor import SQLParserVisitor
 
 # from ..ast_nodes.expression_nodes import *
 from ..ast_nodes.basic_nodes import *
-from ..ast_nodes.select_nodes import TopSpec
+from ..ast_nodes.select_nodes import TopSpec, Star
 
 
 class BasicVisitor(SQLParserVisitor):
@@ -184,16 +184,6 @@ class BasicVisitor(SQLParserVisitor):
         else:
             return ParenLiteralMax(self.visit(ctx.literal()), is_max=False)
 
-
-
-
-
-
-
-
-
-
-
     def visitFunction_call(self, ctx: SQLParser.Function_callContext):
         schema = None
         if ctx.DOT():
@@ -210,24 +200,17 @@ class BasicVisitor(SQLParserVisitor):
 
     def visitFunction_arguments(self, ctx: SQLParser.Function_argumentsContext):
         if ctx.STAR():
-            return ['*']
-        args = []
+            return Star()
 
-        exprs = ctx.expression()
-        aliases = ctx.as_alias()
+        return self.visit(ctx.expression_alias_list())
 
-        for i, expr_ctx in enumerate(exprs):
-            expr = self.visit(expr_ctx)
-            alias = self.visit(aliases[i]) if i < len(aliases) else None
-            args.append(FunctionArg(expr, alias))
+    def visitExpression_alias_list(self, ctx: SQLParser.Expression_alias_listContext):
+        return ItemsList([self.visit(expr) for expr in ctx.expression_alias()])
 
-        return args
-
-
-
-
-
-
+    def visitExpression_alias(self, ctx: SQLParser.Expression_aliasContext):
+        expr = self.visit(ctx.expression())
+        alias = self.visit(ctx.as_alias()) if ctx.as_alias() else None
+        return ExpressionAlaisNode(expr, alias)
 
     def visitLiteral(self, ctx: SQLParser.LiteralContext):
         return Literal(ctx.getText())

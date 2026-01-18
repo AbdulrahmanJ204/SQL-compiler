@@ -59,20 +59,18 @@ class SelectVisitor(SQLParserVisitor):
     def visitSelect_list_item_list(self, ctx: SQLParser.Select_list_item_listContext):
         return [self.visit(item_ctx) for item_ctx in ctx.select_list_item()]
 
-    def visitFullTableDotStar(self, ctx: SQLParser.FullTableDotStarContext):
-        return TableStarSelectItem(self.visit(ctx.full_table_name()))
-
-    def visitStartSelectItem(self, ctx: SQLParser.StartSelectItemContext):
-        return Star()
-
-    def visitSelectListElement(self, ctx: SQLParser.SelectListElementContext):
+    def visitSelect_list_item(self, ctx:SQLParser.Select_list_itemContext):
+        if ctx.DOT():
+            return TableStarSelectItem(self.visit(ctx.full_table_name()))
+        elif ctx.STAR():
+            return Star()
         return self.visit(ctx.select_list_element())
 
+
     def visitSelect_list_element(self, ctx: SQLParser.Select_list_elementContext):
-        if ctx.getChildCount() <= 2:
-            expr = self.visit(ctx.expression(0))
-            alias = self.visit(ctx.as_alias()) if ctx.as_alias() else None
-            return ExpressionAlaisNode(expr, alias)
+        if ctx.expression_alias():
+            return self.visit(ctx.expression_alias())
+
         left = self.visit(ctx.expression(0))
         right = self.visit(ctx.expression(1))
         op = ctx.getChild(1).getText()

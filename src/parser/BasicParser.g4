@@ -120,9 +120,11 @@ function_call
 
 function_arguments
     : STAR
-    | expression  as_alias? (COMMA expression  as_alias?)*
+    | expression_alias_list
     ;
 
+expression_alias_list: expression_alias (COMMA expression_alias)*;
+expression_alias: expression as_alias?;
 
 
 column_definition
