@@ -46,7 +46,7 @@ derived_table
     : LPAREN select_statement RPAREN
     ;
 
-as_alias: AS? expression; // TODO : Check it .
+as_alias: AS? expression;
 
 full_table_name: IDENTIFIER (DOT IDENTIFIER)*;
 
@@ -63,8 +63,6 @@ user_variable_list: USER_VARIABLE (COMMA USER_VARIABLE)*;
 
 operators: EQ | NEQ | LTE | GTE | LT | GT ;
 
-
-// TODO : complete from here
 
 column_type
     : datatype SPARSE? nullability_clause;
@@ -256,7 +254,6 @@ default_table_constraint
 user_name : IDENTIFIER  ;
 
 
-// TDOO : complete from here
 table_type_definition
     :TABLE table_type_element_list;
 table_type_element_list:LPAREN table_type_element (COMMA table_type_element)* RPAREN;

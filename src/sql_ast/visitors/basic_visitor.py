@@ -1,9 +1,7 @@
-from PIL.DdsImagePlugin import item1
 
 from generated.SQLParser import SQLParser
 from generated.SQLParserVisitor import SQLParserVisitor
 
-# from ..ast_nodes.expression_nodes import *
 from ..ast_nodes.basic_nodes import *
 from ..ast_nodes.select_nodes import TopSpec, Star
 
