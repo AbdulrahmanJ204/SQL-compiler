@@ -160,9 +160,9 @@ computed_column_definition
 column_constraint
     : (CONSTRAINT IDENTIFIER)? column_constraint_body
     ;
-column_constraint_body:
-      default_col_constraint
-    | pk_constraint
+column_constraint_body
+    : default_col_constraint
+    | PRIMARY KEY
     | unique_constraint
     | single_word_constrain
     | identity_col_constraint
