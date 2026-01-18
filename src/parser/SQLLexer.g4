@@ -311,6 +311,7 @@ CHECK_POLICY:'CHECK_POLICY';
 CHECK_EXPIRATION:'CHECK_EXPIRATION';
 DOUBLE_COLON : '::';
 IMPERSONATE:'IMPERSONATE';
+PROVIDER:'PROVIDER';
 //! ╔══════════════════════════════════╗
 //! ║━━━━━━━━━━━━<LITERALs>━━━━━━━━━━━━║
 //! ╚══════════════════════════════════╝

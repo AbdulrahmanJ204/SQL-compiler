@@ -59,6 +59,7 @@ primary_expression:
 	LPAREN expression RPAREN
 	| full_column_name
 	| function_call
+	| datatype
 	| literal
 	| NULL
 	| USER_VARIABLE

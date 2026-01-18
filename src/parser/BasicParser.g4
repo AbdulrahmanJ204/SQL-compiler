@@ -240,7 +240,7 @@ pk_table_constraint
 
 
 unique_table_constraint:
- unique_constraint column_list;
+unique_constraint column_list;
 
 fk_table_constraint
     : FOREIGN KEY

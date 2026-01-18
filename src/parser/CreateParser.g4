@@ -89,7 +89,13 @@ create_user_core
     | WITH PASSWORD EQ literal (COMMA create_user_option)*
     | WITHOUT LOGIN with_user_options?
     | with_limited_user_options
+    | from_external_provider_clause
     ;
+
+from_external_provider_clause
+    : FROM EXTERNAL PROVIDER with_limited_user_options?
+    ;
+
 
 limited_user_option
     : DEFAULT_SCHEMA EQ full_table_name
