@@ -4,6 +4,7 @@ from sql_ast.ast_nodes.program import Program
 from sql_ast.ast_nodes.statements import DeleteStatement, SetStatement
 
 from sql_ast.ast_nodes.basic_nodes import Table, ColumnOrTable
+from sql_ast.visitors.alter_visitor import AlterVisitor
 from sql_ast.visitors.basic_visitor import BasicVisitor
 from sql_ast.visitors.cursor_visitor import CursorVisitor
 from sql_ast.visitors.expression_visitor import ExpressionVisitor
@@ -11,7 +12,7 @@ from sql_ast.visitors.select_visitor import SelectVisitor
 from sql_ast.visitors.truncate_visitor import TruncateVisitor
 
 
-class ASTBuilderVisitor(ExpressionVisitor, BasicVisitor, SelectVisitor, CursorVisitor, TruncateVisitor):
+class ASTBuilderVisitor(ExpressionVisitor, BasicVisitor, SelectVisitor, CursorVisitor, TruncateVisitor, AlterVisitor):
     ###################################################################
     #             SQLParser Visit.
     ###################################################################

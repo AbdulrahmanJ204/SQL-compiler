@@ -12,8 +12,8 @@ alter_statement
     ;
 
 alter_table
-    : ALTER TABLE full_table_name table_action (COMMA table_action)* SEMI? ;
-
+    : ALTER TABLE full_table_name table_action_list SEMI? ;
+table_action_list: table_action (COMMA table_action)*;
 table_action
     : table_alter_column
     | table_add
