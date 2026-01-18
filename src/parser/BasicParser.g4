@@ -164,12 +164,12 @@ column_constraint
     ;
 column_constraint_body:
       default_col_constraint
-    | pk_col_constraint
-    | unique_col_constraint
+    | pk_constraint
+    | unique_constraint
     |single_word_constrain
     | identity_col_constraint
     | col_foreign_key_constraint
-    | check_col_constraint
+    | check_constraint
     ;
 single_word_constrain:
      NOT NULL
@@ -180,9 +180,10 @@ single_word_constrain:
 
 
 identity_col_constraint: IDENTITY (LPAREN NUMBER_LITERAL COMMA NUMBER_LITERAL RPAREN)?;
-check_col_constraint: CHECK LPAREN search_condition RPAREN;
-pk_col_constraint: PRIMARY KEY (CLUSTERED | NONCLUSTERED)?; // clusterd by default
-unique_col_constraint: UNIQUE (CLUSTERED | NONCLUSTERED)?; // non clusterd by default
+check_constraint
+    : CHECK LPAREN search_condition RPAREN ;
+pk_constraint: PRIMARY KEY (CLUSTERED | NONCLUSTERED)?; // clusterd by default
+unique_constraint: UNIQUE (CLUSTERED | NONCLUSTERED)?; // non clusterd by default
 col_foreign_key_constraint: (FOREIGN KEY)? REFERENCES full_table_name column_list;
 
 
@@ -207,40 +208,79 @@ literal_with_optional_parentheses
     | paren_literal
     ;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 table_constraint
-    : CONSTRAINT IDENTIFIER? constraint_body
-    | constraint_body
+    : (CONSTRAINT IDENTIFIER)? table_constraint_body
     ;
 
 // no override
-constraint_body
-    : pk_or_unique_constraint
-    | foreign_key_constraint
+table_constraint_body
+    : pk_table_constraint
+    | unique_table_constraint
+    | fk_table_constraint
     | check_constraint
-    | default_constraint
+    | default_table_constraint
     ;
 
-pk_or_unique_constraint
-    : (PRIMARY KEY (CLUSTERED | NONCLUSTERED)?
-     | UNIQUE (CLUSTERED | NONCLUSTERED)?)
-      LPAREN full_column_name (COMMA full_column_name)* RPAREN
-    ;
+pk_table_constraint
+    : pk_constraint column_list;
 
-foreign_key_constraint
+
+unique_table_constraint:
+ unique_constraint column_list;
+
+fk_table_constraint
     : FOREIGN KEY
-      LPAREN full_column_name (COMMA full_column_name)* RPAREN
+      column_list
       REFERENCES full_table_name
-      LPAREN full_column_name (COMMA full_column_name)* RPAREN
+      column_list
     ;
 
-check_constraint
-    : CHECK LPAREN search_condition RPAREN ;
 
-default_constraint
+default_table_constraint
     : DEFAULT default_value_expr FOR full_column_name;
 
 user_name : IDENTIFIER  ;
 
+
+// TDOO : complete from here
+table_type_definition
+    :TABLE table_type_element_list;
+table_type_element_list:LPAREN table_type_element (COMMA table_type_element)* RPAREN;
+
+table_type_element
+    : column_definition
+    | table_constraint
+    ;
+
+go_statement: ((USE IDENTIFIER )| GO) SEMI?;
+
+statement_block: BEGIN SEMI? (statement)+ END SEMI?;
+
+print_clause: PRINT expression SEMI?;
+
+literal: NUMBER_LITERAL |TRUE |FALSE |BIT_STRING_LITERAL |MONEY_LITERAL |HEX_LITERAL |STRING_LITERAL |UNICODE_STRING_LITERAL;
+
+with_partition_number_expression:WITH LPAREN PARTITIONS partition_number_expression_list RPAREN;
+
+partition_number_expression_list: LPAREN partition_number_expression (COMMA partition_number_expression)*  RPAREN;
+partition_number_expression: range | literal;
+range: literal TO literal;
+
+// TODO : complete After ONLYONE checks it
 function_name : full_table_name  ;
 
 function_parameters
@@ -251,6 +291,8 @@ function_parameter_list
 
 function_parameter
     : USER_VARIABLE AS?  datatype  (NULL | NOT NULL)? (EQ default_value)? (READONLY)?;
+
+
 
 default_value
     : literal
@@ -270,22 +312,6 @@ view_attribute
     ;
 
 view_check_option : WITH CHECK OPTION ;
-table_type_definition
-    :TABLE LPAREN table_type_element (COMMA table_type_element)* RPAREN;
-
-
-table_type_element
-    : column_definition
-    | table_constraint
-    ;
-
-go_statement: ((USE IDENTIFIER )| GO) SEMI?;
-
-statement_block: BEGIN SEMI? (statement)+ END SEMI?;
-
-print_clause: PRINT expression SEMI?;
-
-literal: NUMBER_LITERAL |TRUE |FALSE |BIT_STRING_LITERAL |MONEY_LITERAL |HEX_LITERAL |STRING_LITERAL |UNICODE_STRING_LITERAL;
 /*function_body
     : BEGIN statement* RETURN expression END
     | RETURN select_statement
@@ -297,9 +323,3 @@ function_return_type
     | USER_VARIABLE  table_type_definition
     ;*/
 
-
-with_partition_number_expression:WITH LPAREN PARTITIONS partition_number_expression RPAREN;
-
-partition_number_expression: LPAREN (range | literal) (COMMA (range | literal))*  RPAREN;
-
-range: literal TO literal;

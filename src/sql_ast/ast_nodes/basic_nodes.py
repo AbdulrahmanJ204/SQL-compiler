@@ -310,7 +310,7 @@ class ComputedColumnDefinition(ASTNode):
 
 
 class ColumnConstraint(ASTNode):
-    def __init__(self,body , prefix = None):
+    def __init__(self, body, prefix=None):
         self.body = body
         self.prefix = prefix
 
@@ -321,7 +321,7 @@ class ColumnConstraint(ASTNode):
 
 
 class IdentityConstraint(ASTNode):
-    def __init__(self, seed = 1, increment = 1):
+    def __init__(self, seed=1, increment=1):
         self.seed = seed
         self.increment = increment
 
@@ -339,6 +339,7 @@ class CheckConstraint(ASTNode):
         self.self_print(spacer * level)
         self.condition.print(spacer, level + 1)
 
+
 class PrimaryKeyConstraint(ASTNode):
     def __init__(self, clustered=True):
         self.clustered = clustered
@@ -354,6 +355,7 @@ class UniqueConstraint(ASTNode):
     def print(self, spacer="  ", level=0):
         print(spacer * level, f"Unique : {'CLUSTERED' if self.clustered else 'NONCLUSTERED'}")
 
+
 class ColumnForeignKeyConstraint(ASTNode):
     def __init__(self, referenced_table, referenced_column):
         self.referenced_table = referenced_table
@@ -364,6 +366,7 @@ class ColumnForeignKeyConstraint(ASTNode):
         self.referenced_table.print(spacer, level + 2)
         self.referenced_column.print(spacer, level + 2)
 
+
 class DefaultConstraint(ASTNode):
     def __init__(self, default_value):
         self.default_value = default_value
@@ -372,3 +375,102 @@ class DefaultConstraint(ASTNode):
         self.self_print(spacer * level)
         self.default_value.print(spacer, level + 1)
 
+
+class TableConstraint(ASTNode):
+    def __init__(self, body, prefix=None):
+        self.body = body
+        self.prefix = prefix
+
+    def print(self, spacer="  ", level=0):
+        if self.prefix:
+            print(spacer * level, self.prefix)
+        self.body.print(spacer, level + 1)
+
+
+class PrimaryKeyTableConstraint(ASTNode):
+    def __init__(self, column_list, pk):
+        self.column_list = column_list
+        self.pk = pk
+
+    def print(self, spacer="  ", level=0):
+        self.pk.print(spacer, level + 1)
+        self.column_list.print(spacer, level + 1)
+
+
+class UniqueTableConstraint(ASTNode):
+    def __init__(self, column_list, unique):
+        self.column_list = column_list
+        self.unique = unique
+
+    def print(self, spacer="  ", level=0):
+        self.unique.print(spacer, level + 1)
+        self.column_list.print(spacer, level + 1)
+
+
+class ForeignKeyTableConstraint(ASTNode):
+    def __init__(self, column_list, referenced_table, referenced_column):
+        self.column_list = column_list
+        self.referenced_table = referenced_table
+        self.referenced_column = referenced_column
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * (level + 1), "FOREIGN KEY COLUMNS :")
+        self.column_list.print(spacer, level + 2)
+        print(spacer * (level + 1), "REFERENCES :")
+        self.referenced_table.print(spacer, level + 2)
+        self.referenced_column.print(spacer, level + 2)
+
+
+class DefaultTableConstraint(ASTNode):
+    def __init__(self, column, default_value):
+        self.column = column
+        self.default_value = default_value
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * (level + 1), "COLUMN :")
+        self.column.print(spacer, level + 2)
+        print(spacer * (level + 1), "DEFAULT VALUE :")
+        self.default_value.print(spacer, level + 2)
+
+
+class TableTypeDefinition(ASTNode):
+    def __init__(self, lst):
+        self.list = lst
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * level, "TABLE TYPE DEFINITION :")
+        self.list.print(spacer, level + 2)
+
+
+class GoStatement(ASTNode):
+    def __init__(self, id=None):
+        self.id = id
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * level, "GO STATEMENT :")
+        if self.id:
+            print(spacer * (level+1), f"Use : {self.id}")
+
+class PrintClause(ASTNode):
+    def __init__(self, expression):
+        self.expression = expression
+
+    def print(self, spacer="  ", level=0):
+        self.self_print(spacer * level)
+        self.expression.print(spacer, level + 1)
+
+class WithPartitionNumberExpression(ASTNode):
+    def __init__(self, expressions_list):
+        self.expressions_list = expressions_list
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * level , "WITH PARTITIONS :")
+        self.expressions_list.print(spacer, level + 2)
+
+class Range(ASTNode):
+    def __init__(self,from_, to_):
+        self.from_ = from_
+        self.to_ = to_
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * level , f"RANGE : {self.from_} to {self.to_}")
