@@ -274,6 +274,12 @@ print_clause: PRINT expression SEMI?;
 
 literal: NUMBER_LITERAL |TRUE |FALSE |BIT_STRING_LITERAL |MONEY_LITERAL |HEX_LITERAL |STRING_LITERAL |UNICODE_STRING_LITERAL;
 
+with_partition_number_expression:WITH LPAREN PARTITIONS partition_number_expression_list RPAREN;
+
+partition_number_expression_list: LPAREN partition_number_expression (COMMA partition_number_expression)*  RPAREN;
+partition_number_expression: range | literal;
+range: literal TO literal;
+
 // TODO : complete After ONLYONE checks it
 function_name : full_table_name  ;
 
@@ -317,11 +323,3 @@ function_return_type
     | USER_VARIABLE  table_type_definition
     ;*/
 
-
-// TODO : These are never used in the parser
-
-with_partition_number_expression:WITH LPAREN PARTITIONS partition_number_expression RPAREN;
-
-partition_number_expression: LPAREN (range | literal) (COMMA (range | literal))*  RPAREN;
-
-range: literal TO literal;

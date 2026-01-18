@@ -337,3 +337,14 @@ class BasicVisitor(SQLParserVisitor):
 
 
         return Literal(ctx.getText())
+
+    def visitWith_partition_number_expression(self, ctx:SQLParser.With_partition_number_expressionContext):
+        return WithPartitionNumberExpression(self.visit(ctx.partition_number_expression_list()))
+
+    def visitPartition_number_expression_list(self, ctx:SQLParser.Partition_number_expression_listContext):
+        return ItemsList([self.visit(expr) for expr in ctx.partition_number_expression()])
+
+    def visitRange(self, ctx:SQLParser.RangeContext):
+        from_ = self.visit(ctx.literal(0))
+        to_ = self.visit(ctx.literal(1))
+        return Range(from_, to_)
