@@ -6,8 +6,11 @@ class SingleValueNode(ASTNode):
         self.value = value
 
     def print(self, spacer="  ", level=0):
-        print(spacer * level, self.value)
+        self.self_print(spacer * level, self.value)
 
+class UserVariable(SingleValueNode):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level, self.__class__.__name__ + ": " + self.value)
 
 class Variable(SingleValueNode):
     pass
@@ -449,7 +452,8 @@ class GoStatement(ASTNode):
     def print(self, spacer="  ", level=0):
         print(spacer * level, "GO STATEMENT :")
         if self.id:
-            print(spacer * (level+1), f"Use : {self.id}")
+            print(spacer * (level + 1), f"Use : {self.id}")
+
 
 class PrintClause(ASTNode):
     def __init__(self, expression):
@@ -459,18 +463,20 @@ class PrintClause(ASTNode):
         self.self_print(spacer * level)
         self.expression.print(spacer, level + 1)
 
+
 class WithPartitionNumberExpression(ASTNode):
     def __init__(self, expressions_list):
         self.expressions_list = expressions_list
 
     def print(self, spacer="  ", level=0):
-        print(spacer * level , "WITH PARTITIONS :")
+        print(spacer * level, "WITH PARTITIONS :")
         self.expressions_list.print(spacer, level + 2)
 
+
 class Range(ASTNode):
-    def __init__(self,from_, to_):
+    def __init__(self, from_, to_):
         self.from_ = from_
         self.to_ = to_
 
     def print(self, spacer="  ", level=0):
-        print(spacer * level , f"RANGE : {self.from_} to {self.to_}")
+        print(spacer * level, f"RANGE : {self.from_} to {self.to_}")

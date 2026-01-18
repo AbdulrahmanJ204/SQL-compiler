@@ -27,20 +27,19 @@ statement:transaction_statement|  dml_statement | ddl_statement | variable_state
 
 
 set_statement
-    :
-     set_identity_insert
-    |set_options
-    |set_numeric_roundabort
+    :SET set_options  SEMI?
     ;
-set_identity_insert: SET IDENTITY_INSERT full_table_name (ON | OFF) SEMI?;
 
 
-set_options:SET set_option_name_list ON SEMI?;
+set_options: set_options_list|identity_insert;
+
+set_options_list:set_option_name_list (ON | OFF);
+identity_insert:  IDENTITY_INSERT full_table_name (ON | OFF);
+
 set_option_name_list
     : set_option_name (COMMA set_option_name)*;
 
-set_numeric_roundabort: SET NUMERIC_ROUNDABORT (ON | OFF) SEMI?;
-
 set_option_name
-    : ANSI_PADDING | ANSI_WARNINGS | CONCAT_NULL_YIELDS_NULL | ARITHABORT | QUOTED_IDENTIFIER | ANSI_NULLS ;
+    : ANSI_PADDING|NUMERIC_ROUNDABORT| NOCOUNT| ANSI_WARNINGS | CONCAT_NULL_YIELDS_NULL | ARITHABORT | QUOTED_IDENTIFIER | ANSI_NULLS ;
+
 

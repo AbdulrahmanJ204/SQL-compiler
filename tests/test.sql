@@ -1,5 +1,7 @@
-(
-    SELECT col1 FROM table1
-)
-UNION
-SELECT col1 FROM table2;
+
+DECLARE @find AS VARCHAR (30);
+
+DECLARE @find VARCHAR(30) = 'Man%';
+
+
+
