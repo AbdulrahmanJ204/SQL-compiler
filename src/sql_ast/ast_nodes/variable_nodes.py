@@ -42,3 +42,25 @@ class TableVariableNode(ASTNode):
         print(spacer * level + "Table Variable:")
         self.user_var.print(spacer , level + 1)
         self.table_type.print(spacer , level + 1)
+
+
+class SetCursorVariableNode(ASTNode):
+    def __init__(self, user_var, cursor):
+        self.user_var = user_var
+        self.cursor = cursor
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Set Cursor Variable:")
+        self.user_var.print(spacer , level + 1)
+        self.cursor.print(spacer , level + 1)
+
+class SetScalarVariableNode(ASTNode):
+    def __init__(self, user_var, op, expression):
+        self.user_var = user_var
+        self.op = op
+        self.expression = expression
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + f"Set Scalar Variable: {self.op}")
+        self.user_var.print(spacer , level + 1)
+        self.expression.print(spacer , level + 1)

@@ -6,7 +6,7 @@ class SingleValueNode(ASTNode):
         self.value = value
 
     def print(self, spacer="  ", level=0):
-        print(spacer * level, self.value)
+        self.self_print(spacer * level, self.value)
 
 class UserVariable(SingleValueNode):
     def print(self, spacer="  ", level=0):
