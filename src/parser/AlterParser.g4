@@ -18,7 +18,6 @@ alter_table
 alter_table_with_clause
     : WITH (CHECK | NOCHECK);
 
-table_action_list: table_action (COMMA table_action)*;
 table_action
     : table_alter_column
     | table_add
@@ -26,6 +25,16 @@ table_action
     | table_check_constraint
     | table_drop_constraint_simple
     | table_drop
+    | table_set_option
+    ;
+table_set_option
+    : SET LPAREN table_option (COMMA table_option)* RPAREN;
+table_option
+    : LOCK_ESCALATION EQ lock_escalation_value;
+lock_escalation_value
+    : AUTO
+    | TABLE
+    | DISABLE
     ;
 
 constraint_target: IDENTIFIER | ALL;
@@ -37,6 +46,7 @@ table_alter_column
 alter_column_action
     : column_type
       collate_clause?
+      encrypted_with_clause?
       nullability_clause? // todo : check if i can remove the ? if it has a defaulf value of null
       SPARSE?
     | alter_column_option_action
