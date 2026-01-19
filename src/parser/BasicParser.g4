@@ -319,3 +319,14 @@ encrypted_option
     | ENCRYPTION_TYPE EQ (DETERMINISTIC | RANDOMIZED)
     | ALGORITHM EQ STRING_LITERAL
     ;
+
+function_body
+    : BEGIN statement* RETURN expression END
+    | RETURN select_statement
+    | RETURN LPAREN select_statement RPAREN
+    ;
+
+function_return_type
+    : return_data_type
+    | USER_VARIABLE  table_type_definition
+    ;

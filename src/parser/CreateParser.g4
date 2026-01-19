@@ -11,6 +11,7 @@ create_statement
     | create_user
     | create_login
     | grant_statement
+    |create_function
     ;
 
 create_table
@@ -201,7 +202,7 @@ data_compression_kind
 table_partitions_clause
     : ON PARTITIONS LPAREN partition_number_expression (COMMA partition_number_expression)* RPAREN;
 
-/*create_function
+create_function
     : CREATE (OR ALTER)? FUNCTION function_name function_parameters
       RETURNS function_return_type
       (WITH function_options)?
@@ -211,8 +212,7 @@ table_partitions_clause
     ;
 
 function_options
-    : function_option (COMMA function_option)*
-    ;
+    : function_option (COMMA function_option)*;
 
 function_option
     : ENCRYPTION
@@ -224,11 +224,4 @@ function_option
     ;
 
 execute_as_clause
-    : EXECUTE AS (CALLER | SELF | OWNER | LITERAL)
-    ;
-
-function_body
-    : BEGIN statement* RETURN expression? END
-    | RETURN select_statement
-    | RETURN LPAREN select_statement RPAREN
-    ;*/
+    : EXECUTE AS (CALLER | SELF | OWNER | LITERAL);
