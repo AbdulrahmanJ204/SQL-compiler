@@ -241,6 +241,19 @@ class InsertRecordValuesList(ItemsList):
             value.print(spacer, level + 1)
 
 
+class AssignmentList(ItemsList):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level, "ASSIGNMENT LIST")
+        for value in self.items:
+            value.print(spacer, level + 1)
+
+class ArgumentList(ItemsList):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level, "ARGUMENT LIST")
+        for value in self.items:
+            value.print(spacer, level + 1)
+
+
 class DefaultValue(ASTNode):
     def __init__(self, default_text):
         self.default_text = default_text

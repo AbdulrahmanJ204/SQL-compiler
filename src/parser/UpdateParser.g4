@@ -16,9 +16,18 @@ assignment
     | udt_method_assignment
     ;
 
+
 normal_assignment
     : target assignment_operator source
     ;
+
+
+target
+    : full_column_name
+    | USER_VARIABLE
+    ;
+
+
 
 assignment_operator
     : EQ
@@ -32,9 +41,12 @@ assignment_operator
     | CARET_EQ
     ;
 
+source
+    : expression | DEFAULT
+    ;
+
 write_assignment
-    : full_column_name DOT WRITE
-      LPAREN expression COMMA expression COMMA expression RPAREN
+    : full_column_name DOT WRITE LPAREN expression COMMA expression COMMA expression RPAREN
     ;
 
 udt_method_assignment
@@ -43,14 +55,6 @@ udt_method_assignment
 
 argument_list
     : expression (COMMA expression)*;
-
-target
-    : full_column_name
-    | USER_VARIABLE
-    ;
-source
-    : expression | DEFAULT
-    ;
 
 
 

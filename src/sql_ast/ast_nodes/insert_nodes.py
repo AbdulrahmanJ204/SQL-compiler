@@ -29,7 +29,7 @@ class InsertStatementNode(ASTNode):
 
         self.insert_source.print(spacer,level+1)
 
-class InsertedValue(ASTNode):
+class InsertedUpdatedValue(ASTNode):
     def __init__(self, value):
         self.value = value
 

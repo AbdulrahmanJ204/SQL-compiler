@@ -3,7 +3,7 @@ from generated.SQLParserVisitor import SQLParserVisitor
 from sql_ast.ast_nodes.ast_node import ASTNode
 from sql_ast.ast_nodes.basic_nodes import UserVariable, InsertRecordsList, InsertRecordValuesList, SingleValueNode, \
     DefaultValue
-from sql_ast.ast_nodes.insert_nodes import InsertStatementNode, InsertedValue
+from sql_ast.ast_nodes.insert_nodes import InsertStatementNode, InsertedUpdatedValue
 
 
 class InsertVisitor(SQLParserVisitor):
@@ -25,7 +25,7 @@ class InsertVisitor(SQLParserVisitor):
         return InsertRecordValuesList([self.visit(value) for value in ctx.value()])
 
     def visitValue(self, ctx:SQLParser.ValueContext):
-        return DefaultValue(ctx.DEFAULT()) if ctx.DEFAULT() else  InsertedValue(self.visit(ctx.expression()))
+        return DefaultValue(ctx.DEFAULT()) if ctx.DEFAULT() else  InsertedUpdatedValue(self.visit(ctx.expression()))
 
     def visitDefault_values(self, ctx:SQLParser.Default_valuesContext):
         return DefaultValue(ctx.getText())
