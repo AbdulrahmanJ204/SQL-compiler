@@ -23,18 +23,38 @@ drop_view
     : VIEW if_exists? view_name_list
     ;
 
+view_name_list
+    : full_table_name (COMMA full_table_name)*;
+
 drop_user
     : USER if_exists? user_name
     ;
 drop_index
-    : INDEX if_exists? index_name ON full_table_name
+    : INDEX drop_index_item (COMMA drop_index_item)*;
+
+drop_index_item
+    : if_exists? index_name ON full_table_name drop_index_with_clause?;
+
+if_exists: IF EXISTS;
+
+drop_index_with_clause
+    : WITH LPAREN drop_index_option (COMMA drop_index_option)* RPAREN;
+
+drop_index_option
+    : MAXDOP EQ expression
+    | ONLINE EQ (ON | OFF)
+    | MOVE TO drop_move_target
+    | FILESTREAM_ON drop_filestream_target
     ;
 
-if_exists
-    : IF EXISTS
+drop_move_target
+    : partition_target
+    | IDENTIFIER
+    ;
+drop_filestream_target
+    : partition_target
+    | IDENTIFIER
     ;
 
-view_name_list
-    : full_table_name (COMMA full_table_name)*
-    ;
+
 

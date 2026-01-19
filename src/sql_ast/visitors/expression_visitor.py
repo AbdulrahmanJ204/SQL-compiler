@@ -1,7 +1,8 @@
 
 from generated.SQLParser import SQLParser
 from generated.SQLParserVisitor import SQLParserVisitor
-from ..ast_nodes.expressions import *
+from ..ast_nodes.basic_nodes import Variable, Literal
+from ..ast_nodes.expression_nodes import *
 
 class ExpressionVisitor(SQLParserVisitor):
     def visitOr_expression(self, ctx: SQLParser.Or_expressionContext):
@@ -53,8 +54,6 @@ class ExpressionVisitor(SQLParserVisitor):
 
         return QuantifiedSubquery(quantifier, select_st)
 
-    def visitOperators(self, ctx: SQLParser.OperatorsContext):
-        return ctx.getText()
 
     def visitIn_predicate(self, ctx: SQLParser.In_predicateContext):
         expr = self.visit(ctx.expression())
@@ -169,6 +168,8 @@ class ExpressionVisitor(SQLParserVisitor):
             return Literal(ctx.NULL().getText())
         elif ctx.derived_table():
             return self.visit(ctx.derived_table())
+        elif ctx.datatype():
+            return self.visit(ctx.datatype())
         else:
             raise NotImplementedError(
                 f"Unsupported primary_expression: {ctx.getText()}"

@@ -50,6 +50,7 @@ CURRENT_TIME: 'CURRENT_TIME';
 CURRENT_TIMESTAMP: 'CURRENT_TIMESTAMP';
 CURRENT_USER: 'CURRENT_USER';
 CURSOR: 'CURSOR';
+NOCOUNT : 'NOCOUNT';
 DATABASE: 'DATABASE';
 DBCC: 'DBCC';
 DEALLOCATE: 'DEALLOCATE';
@@ -131,7 +132,6 @@ OVER: 'OVER';
 PERCENT: 'PERCENT';
 PIVOT: 'PIVOT';
 PLAN: 'PLAN';
-PRECISION: 'PRECISION';
 PRIMARY: 'PRIMARY';
 PRINT: 'PRINT';
 PROC: 'PROC';
@@ -203,7 +203,6 @@ DATETIME: 'DATETIME';
 DAY: 'DAY';
 HOUR: 'HOUR';
 MINUTE: 'MINUTE';
-MONTH: 'MONTH';
 SECOND: 'SECOND';
 EXPLAIN: 'EXPLAIN';
 FILTER: 'FILTER';
@@ -213,11 +212,14 @@ LIMIT: 'LIMIT';
 OFFSET: 'OFFSET';
 ONLY: 'ONLY';
 PARTITION: 'PARTITION';
+PARTITIONS: 'PARTITIONS';
 RECURSIVE: 'RECURSIVE';
 ROLLUP: 'ROLLUP';
 ROW: 'ROW';
 ROWS: 'ROWS';
 WINDOW: 'WINDOW';
+WORK: 'WORK';
+DELAYED_DURABILITY : 'DELAYED_DURABILITY';
 BIGINT: 'BIGINT';
 BINARY: 'BINARY';
 BIT: 'BIT';
@@ -227,6 +229,7 @@ DECIMAL_TYPE: 'DECIMAL_TYPE';
 FLOAT_TYPE: 'FLOAT_TYPE';
 INT_TYPE: 'INT_TYPE';
 MONEY: 'MONEY';
+MARK : 'MARK';
 NCHAR: 'NCHAR';
 NUMERIC: 'NUMERIC';
 NVARCHAR: 'NVARCHAR';
@@ -306,6 +309,52 @@ OWNER:'OWNER';
 WRITE:'WRITE';
 PERSISTED:'PERSISTED';
 SPARSE:'SPARSE';
+DEFAULT_DATABASE:'DEFAULT_DATABASE';
+CHECK_POLICY:'CHECK_POLICY';
+CHECK_EXPIRATION:'CHECK_EXPIRATION';
+DOUBLE_COLON : '::';
+IMPERSONATE:'IMPERSONATE';
+PROVIDER:'PROVIDER';
+DROP_EXISTING:'DROP_EXISTING';
+NUMERIC_ROUNDABORT:'NUMERIC_ROUNDABORT';
+ANSI_PADDING : 'ANSI_PADDING';
+ANSI_WARNINGS : 'ANSI_WARNINGS';
+CONCAT_NULL_YIELDS_NULL: 'CONCAT_NULL_YIELDS_NULL';
+ARITHABORT : 'ARITHABORT';
+QUOTED_IDENTIFIER : 'QUOTED_IDENTIFIER';
+ANSI_NULLS : 'ANSI_NULLS';
+DATA_COMPRESSION:'DATA_COMPRESSION';
+PAGE:'PAGE';
+XML_COMPRESSION:'XML_COMPRESSION';
+PAUSE:'PAUSE';
+RESUME:'RESUME';
+ABORT:'ABORT';
+RESUMABLE:'RESUMABLE';
+COMPRESS_ALL_ROW_GROUPS : 'COMPRESS_ALL_ROW_GROUPS';
+COLUMNSTORE:'COLUMNSTORE';
+COLUMNSTORE_ARCHIVE :'COLUMNSTORE_ARCHIVE';
+STATISTICS_NORECOMPUTE:'STATISTICS_NORECOMPUTE';
+WAIT_AT_LOW_PRIORITY:'WAIT_AT_LOW_PRIORITY';
+MAX_DURATION:'MAX_DURATION';
+MINUTES:'MINUTES';
+ABORT_AFTER_WAIT:'ABORT_AFTER_WAIT';
+BLOCKERS:'BLOCKERS';
+OPTIMIZE_FOR_SEQUENTIAL_KEY:'OPTIMIZE_FOR_SEQUENTIAL_KEY';
+COMPRESSION_DELAY:'COMPRESSION_DELAY';
+STATISTICS_INCREMENTAL:'STATISTICS_INCREMENTAL';
+MOVE:'MOVE';
+FILESTREAM_ON:'FILESTREAM_ON';
+ENCRYPTED:'ENCRYPTED';
+COLUMN_ENCRYPTION_KEY:'COLUMN_ENCRYPTION_KEY';
+ENCRYPTION_TYPE:'ENCRYPTION_TYPE';
+DETERMINISTIC:'DETERMINISTIC';
+RANDOMIZED:'RANDOMIZED';
+ALGORITHM:'ALGORITHM';
+LOCK_ESCALATION:'LOCK_ESCALATION';
+AUTO:'AUTO';
+ENABLE:'ENABLE';
+CHANGE_TRACKING:'CHANGE_TRACKING';
+TRACK_COLUMNS_UPDATED:'TRACK_COLUMNS_UPDATED';
 //! ╔══════════════════════════════════╗
 //! ║━━━━━━━━━━━━<LITERALs>━━━━━━━━━━━━║
 //! ╚══════════════════════════════════╝
@@ -340,35 +389,79 @@ fragment NEW_LINE_STRING: '\\' '\r'? '\n';
 
 STRING_LITERAL:
 	(
-		SINGLE_QUOTE (ESCAPED_QUOTE | NEW_LINE_STRING | ~['\r\n])* SINGLE_QUOTE
-	);
+		SINGLE_QUOTE (ESCAPED_QUOTE | NEW_LINE_STRING | ~['])* SINGLE_QUOTE
+	) {
+raw = self.text
+# Remove the first and last quote
+raw = raw[1:-1]
+ln = len(raw)
+i = 0
+ln = len(raw)
+txt = ""
+after_newline = False
 
-// {
-//   raw = self.text
-//   # Remove the first and last quote
-//   raw = raw[1:-1]
-//   # Replace doubled single quotes with one single quote
-//   raw = raw.replace("''", "'")
-//   # Remove \r and \n that come after backslash
-//   raw = raw.replace("\\\r\n", "")  # Windows line ending
-//   raw = raw.replace("\\\n", "")    # Unix line ending
-//   raw = raw.replace("\\\r", "")    # Old Mac line ending
-//   self.text = raw
-// };
+while i < ln:
+    if raw[i] == '\\' and i + 1 < ln and raw[i + 1] in ('\n', '\r'):
+        i += 2
+        if i < ln and raw[i - 1] == '\r' and raw[i] == '\n':
+            i += 1
+        after_newline = True
+        continue
 
-UNICODE_STRING_LITERAL: ('N' STRING_LITERAL);
-//  {
-//         raw = self.text
-//         # Remove the N , first and last quote
-//         raw = raw[2:-1]
-//         # Replace doubled single quotes with one single quote
-//         raw = raw.replace("''", "'")
-//         # Remove \r and \n that come after backslash
-//         raw = raw.replace("\\\r\n", "")  # Windows line ending
-//         raw = raw.replace("\\\n", "")    # Unix line ending
-//         raw = raw.replace("\\\r", "")    # Old Mac line ending
-//         self.text = raw
-//       };
+    if raw[i] in ('\n', '\r'):
+        if not after_newline:
+            txt += " "
+        after_newline = True
+        i += 1
+        if i < ln and raw[i - 1] == '\r' and raw[i] == '\n':
+            i += 1
+        continue
+
+    if after_newline and raw[i] in (' ', '\t'):
+        i += 1
+        continue
+
+    after_newline = False
+    txt += raw[i]
+    i += 1
+self.text = txt
+ };
+
+UNICODE_STRING_LITERAL: ('N' STRING_LITERAL){
+raw = self.text
+raw = raw[2:-1]
+ln = len(raw)
+i = 0
+ln = len(raw)
+txt = ""
+after_newline = False
+
+while i < ln:
+    if raw[i] == '\\' and i + 1 < ln and raw[i + 1] in ('\n', '\r'):
+        i += 2
+        if i < ln and raw[i - 1] == '\r' and raw[i] == '\n':
+            i += 1
+        after_newline = True
+        continue
+
+    if raw[i] in ('\n', '\r'):
+        if not after_newline:
+            txt += " "
+        after_newline = True
+        i += 1
+        if i < ln and raw[i - 1] == '\r' and raw[i] == '\n':
+            i += 1
+        continue
+
+    if after_newline and raw[i] in (' ', '\t'):
+        i += 1
+        continue
+
+    after_newline = False
+    txt += raw[i]
+    i += 1
+self.text = txt
+       };
 
 fragment SINGLE_QUOTE: '\'';
 fragment ESCAPED_QUOTE: '\'\'';
@@ -432,7 +525,7 @@ PIPE_EQ: '|=';
 //! ╚═══════════════════════════════════════════════╝
 WS: [ \t\r\n]+ -> skip;
 LINE_COMMENT: '--' ~[\r\n]* -> skip;
-BLOCK_COMMENT: '/*' (BLOCK_COMMENT | .)*? '*/' -> skip;
+BLOCK_COMMENT: ('/*' (BLOCK_COMMENT | .)*? '*/' )-> skip;
 
 
 fragment DIGIT: [0-9];

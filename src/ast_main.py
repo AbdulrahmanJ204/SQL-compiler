@@ -3,8 +3,8 @@ from antlr4 import FileStream, CommonTokenStream
 from antlr4.error.DiagnosticErrorListener import DiagnosticErrorListener
 
 from errors_listner import SQLErrorListener
-from generated import SQLLexer
-from generated import SQLParser
+from generated.SQLLexer import SQLLexer
+from generated.SQLParser import SQLParser
 
 from sql_ast.ast_builder_visitor import ASTBuilderVisitor
 from visualizar import visualize_parse_tree
@@ -123,7 +123,7 @@ def main():
     ast = visitor.visit(tree)
 
     print("\nAST:")
-    ast.print()
+    ast.print("    ")
     # visualize_parse_tree(parser, tree, title="T-SQL Parse Tree")
 
 

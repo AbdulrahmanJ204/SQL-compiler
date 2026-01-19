@@ -2,8 +2,8 @@ import argparse
 from antlr4 import FileStream, CommonTokenStream
 from antlr4.error.DiagnosticErrorListener import DiagnosticErrorListener
 
-from generated import SQLLexer
-from generated import SQLParser
+from generated.SQLLexer import SQLLexer
+from generated.SQLParser import SQLParser
 
 from sql_ast.ast_builder_visitor import ASTBuilderVisitor
 from visualizar import visualize_parse_tree
@@ -88,7 +88,7 @@ def main():
         token_stream.seek(0)
 
     parser = SQLParser(token_stream)
-    
+
     parser.removeErrorListeners()
     parser.addErrorListener(DiagnosticErrorListener())
 
@@ -104,8 +104,9 @@ def main():
     ast.print()
     visualize_parse_tree(parser, tree, title="T-SQL Parse Tree")
 
-    
+
 
 
 if __name__ == "__main__":
     main()
+

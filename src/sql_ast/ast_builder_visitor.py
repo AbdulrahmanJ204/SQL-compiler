@@ -1,14 +1,22 @@
 from generated.SQLParser import SQLParser
 from generated.SQLParserVisitor import SQLParserVisitor
 from sql_ast.ast_nodes.program import Program
-from sql_ast.ast_nodes.statements import DeleteStatement, WhereClause, SetStatement, StatementBlock
-from sql_ast.ast_nodes.expressions import Literal
-from sql_ast.ast_nodes.basic import Table, TableRef, ColumnRef
+from sql_ast.ast_nodes.statements import DeleteStatement, SetStatement, SetOption
+
+from sql_ast.ast_nodes.basic_nodes import Table, ColumnOrTable, ItemsList, SingleValueNode
+from sql_ast.visitors.alter_visitor import AlterVisitor
 from sql_ast.visitors.basic_visitor import BasicVisitor
+from sql_ast.visitors.control_flow_visitor import ControlFlowVisitor
+from sql_ast.visitors.cursor_visitor import CursorVisitor
 from sql_ast.visitors.expression_visitor import ExpressionVisitor
+from sql_ast.visitors.select_visitor import SelectVisitor
+from sql_ast.visitors.transact_visitor import TransactVisitor
+from sql_ast.visitors.truncate_visitor import TruncateVisitor
+from sql_ast.visitors.variable_visitor import VariableVisitor
 
 
-class ASTBuilderVisitor(ExpressionVisitor , BasicVisitor):
+class ASTBuilderVisitor(ExpressionVisitor, BasicVisitor, SelectVisitor, CursorVisitor, TruncateVisitor, AlterVisitor,
+                        VariableVisitor, TransactVisitor, ControlFlowVisitor):
     ###################################################################
     #             SQLParser Visit.
     ###################################################################
@@ -29,19 +37,30 @@ class ASTBuilderVisitor(ExpressionVisitor , BasicVisitor):
     # no override for statement
 
     def visitSet_statement(self, ctx: SQLParser.Set_statementContext):
-        on = True if ctx.ON() else False
-        table = self.visit(ctx.full_table_name())
-        return SetStatement(table, on)
+        return self.visit(ctx.set_options())
 
-    ###################################################################
-    #             ! END OF SQLParser Visit.
-    ###################################################################
+    def visitIdentity_insert(self, ctx: SQLParser.Identity_insertContext):
+        on = ctx.ON() is not None
+        table = self.visit(ctx.full_table_name())
+        return SetStatement(table, on, True)
+
+    def visitSet_options_list(self, ctx: SQLParser.Set_options_listContext):
+
+        on = ctx.ON() is not None
+        lst = self.visit(ctx.set_option_name_list())
+        return SetStatement(lst, on)
+
+    def visitSet_option_name_list(self, ctx: SQLParser.Set_option_name_listContext):
+        return ItemsList([self.visit(child) for child in ctx.set_option_name()])
+
+    def visitSet_option_name(self, ctx: SQLParser.Set_option_nameContext):
+        return SetOption(ctx.getText())
 
     def visitDelete_statement(self, ctx: SQLParser.Delete_statementContext):
         # TODO : reconstruct this.
         table_ctx = ctx.table_source()
         table_name = table_ctx.getText()
-        table = Table(table_name)
+        table = Table([table_name])
 
         where = None
         if ctx.delete_and_update_where_clause():
@@ -52,4 +71,3 @@ class ASTBuilderVisitor(ExpressionVisitor , BasicVisitor):
             top = self.visit(ctx.top_clause())
 
         return DeleteStatement(table, where, top)
-
