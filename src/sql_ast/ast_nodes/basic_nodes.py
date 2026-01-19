@@ -224,8 +224,26 @@ class ItemsList(ASTNode):
 
     def print(self, spacer="  ", level=0):
         for item in self.items:
-            item.print(spacer, level + 1)
+            item.print(spacer, level)
 
+class InsertRecordsList(ItemsList):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level, "Records List")
+        for record in self.items:
+            record.print(spacer, level + 1)
+
+class InsertRecordValuesList(ItemsList):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level, "Values List")
+        for value in self.items:
+            value.print(spacer, level + 1)
+
+
+class DefaultValue(ASTNode):
+    def __init__(self, default_text):
+        self.default_text = default_text
+    def print(self, spacer="  ", level=0):
+        print(spacer * level, "Default Value")
 
 class ColumnList(ItemsList):
     pass
