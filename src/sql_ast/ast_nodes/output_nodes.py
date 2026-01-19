@@ -7,12 +7,15 @@ class OutputStatement(ASTNode):
         self.into_clause = into_clause
 
     def print(self, spacer="  ", level=0):
-        print(spacer * level, "Select List")
-        self.select_list.print(spacer, level + 1)
+
+        print(spacer * level, "Output into")
+
+        print(spacer * (level+1), "Select List")
+        self.select_list.print(spacer, level + 2)
 
         if self.into_clause:
-            print(spacer * level, "Into Clause")
-            self.into_clause.print(spacer, level + 1)
+            print(spacer * (level+1), "Into Clause")
+            self.into_clause.print(spacer, level + 2)
 
 class OutputSelectListItem(ASTNode):
     def __init__(self, type, alias = None):
