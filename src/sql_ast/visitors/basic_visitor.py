@@ -1,3 +1,5 @@
+from os import name
+
 from generated.SQLParser import SQLParser
 from generated.SQLParserVisitor import SQLParserVisitor
 
@@ -107,8 +109,9 @@ class BasicVisitor(SQLParserVisitor):
         return Alias(self.visit(ctx.expression()))
 
     def visitFull_table_name(self, ctx: SQLParser.Full_table_nameContext):
-        parts = [identifier.getText() for identifier in ctx.IDENTIFIER()]
-        return Table(parts)
+        # name = [identifier.getText() for identifier in ctx.IDENTIFIER()]
+        name = ctx.getText()
+        return Table(name)
 
     def visitTop_clause(self, ctx: SQLParser.Top_clauseContext):
         return TopSpec(self.visit(ctx.expression()), ctx.PERCENT() is not None)
@@ -120,10 +123,7 @@ class BasicVisitor(SQLParserVisitor):
         return SetOperator(ctx.getText())
 
     def visitFull_column_name(self, ctx: SQLParser.Full_column_nameContext):
-        parts = [ctx.getChild(0).getText()]
-        for ident in ctx.IDENTIFIER()[1:]:
-            parts.append(ident.getText())
-        return ColumnOrTable(parts)
+        return ColumnOrTable(ctx.getText())
 
     def visitColumn_list(self, ctx: SQLParser.Column_listContext):
         return ColumnList([self.visit(col) for col in ctx.full_column_name()])

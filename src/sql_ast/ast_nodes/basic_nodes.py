@@ -135,19 +135,19 @@ class Having(SingleExpressionNode):
 
 
 class Table(ASTNode):  # full_table_name
-    def __init__(self, parts):
-        self.parts = parts
+    def __init__(self, name):
+        self.name = name
 
     def print(self, spacer="  ", level=0):
-        self.self_print(spacer * level, ".".join(self.parts))
+        self.self_print(spacer * level, self.name)
 
 
 class ColumnOrTable(ASTNode):
-    def __init__(self, parts):
-        self.parts = parts
+    def __init__(self, name):
+        self.name = name
 
     def print(self, spacer="  ", level=0):
-        self.self_print(spacer * level, ".".join(self.parts))
+        self.self_print(spacer * level, self.name)
 
 
 class FunctionCall(ASTNode):
