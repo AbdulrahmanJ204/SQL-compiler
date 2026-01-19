@@ -2,6 +2,7 @@
 from generated.SQLParser import SQLParser
 from generated.SQLParserVisitor import SQLParserVisitor
 from sql_ast.ast_nodes.basic_nodes import ItemsList
+from sql_ast.ast_nodes.drop_nodes import *
 
 class DropVisitor(SQLParserVisitor):
 
@@ -32,10 +33,10 @@ class DropVisitor(SQLParserVisitor):
     def visitDrop_index_item(self, ctx:SQLParser.Drop_index_itemContext):
         exists =  ctx.if_exists() is not None
         index_name = self.visit(ctx.index_name())
-        name = self.visit(ctx.full_table_name())
+        full_table_name = self.visit(ctx.full_table_name())
         drop_index_with_clause = self.visit(ctx.drop_index_with_clause()) if ctx.drop_index_with_clause() else None
 
-        return DropIndexItem(index_name, name, exists, drop_index_with_clause)
+        return DropIndexItem(index_name, full_table_name, exists, drop_index_with_clause)
 
     def visitDrop_index_with_clause(self, ctx:SQLParser.Drop_index_with_clauseContext):
         return ItemsList([self.visit(item_ctx) for item_ctx in ctx.drop_index_option()])
