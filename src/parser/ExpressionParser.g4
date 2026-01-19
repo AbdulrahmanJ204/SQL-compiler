@@ -13,7 +13,7 @@ or_expression: and_expression (OR and_expression)*;
 and_expression:
 	not_expression (AND not_expression)*;
 
-not_expression: NOT not_expression | predicate_expression;
+not_expression: predicate_expression|NOT not_expression  ;
 
 predicate_expression:
 	LPAREN search_condition RPAREN

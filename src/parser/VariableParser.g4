@@ -21,9 +21,6 @@ cursor_var: USER_VARIABLE CURSOR;
 
 table_var: USER_VARIABLE AS? TABLE table_type_element_list ;
 
-
-// TODO : Complete from here
-
 set_variable: SET set_vars SEMI?;
 set_vars: select_set_variable_item | set_user_eq_cursor;
 set_user_eq_cursor: USER_VARIABLE EQ ( cursor_name | set_declare_cursor_item );

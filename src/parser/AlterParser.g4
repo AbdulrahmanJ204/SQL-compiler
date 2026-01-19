@@ -12,33 +12,36 @@ alter_statement
     ;
 
 alter_table
-    : ALTER TABLE full_table_name alter_table_with_clause? table_action_list SEMI?
+    : ALTER TABLE full_table_name alter_table_with_clause? table_action SEMI?
     ;
 
 alter_table_with_clause
     : WITH (CHECK | NOCHECK);
 
-table_action_list: table_action (COMMA table_action)*;
 table_action
     : table_alter_column
     | table_add
     | table_rename_column
     | table_check_constraint
-    | table_drop_constraint  ;
+    | table_drop_constraint_simple
+    | table_drop
+    | table_set_option
+    | table_change_tracking
+    ;
+table_change_tracking
+    : (ENABLE | DISABLE) CHANGE_TRACKING change_tracking_with_clause?;
 
-table_drop_constraint
-    : DROP CONSTRAINT constraint_name drop_constraint_with_clause?;
+change_tracking_with_clause
+    : WITH LPAREN TRACK_COLUMNS_UPDATED EQ (ON | OFF) RPAREN;
 
-constraint_name: IDENTIFIER   ;
-drop_constraint_with_clause
-    : WITH LPAREN drop_constraint_option (COMMA drop_constraint_option)* RPAREN;
-
-drop_constraint_option
-    : ONLINE EQ (ON | OFF) ;
-
-table_check_constraint
-    : CHECK CONSTRAINT constraint_target
-    | NOCHECK CONSTRAINT constraint_target
+table_set_option
+    : SET LPAREN table_option (COMMA table_option)* RPAREN;
+table_option
+    : LOCK_ESCALATION EQ lock_escalation_value;
+lock_escalation_value
+    : AUTO
+    | TABLE
+    | DISABLE
     ;
 
 constraint_target: IDENTIFIER | ALL;
@@ -50,10 +53,19 @@ table_alter_column
 alter_column_action
     : column_type
       collate_clause?
+      encrypted_with_clause?
       nullability_clause? // todo : check if i can remove the ? if it has a defaulf value of null
       SPARSE?
+      alter_column_with_clause?
     | alter_column_option_action
     ;
+
+alter_column_with_clause
+    : WITH LPAREN alter_column_option (COMMA alter_column_option)* RPAREN;
+
+alter_column_option
+    : ONLINE EQ (ON | OFF) ;
+
 collate_clause
     : COLLATE full_table_name  ;
 
@@ -79,6 +91,43 @@ table_add_item
 
 table_rename_column
     : RENAME COLUMN full_column_name TO IDENTIFIER;
+
+table_check_constraint
+    : CHECK   CONSTRAINT constraint_target
+    | NOCHECK CONSTRAINT constraint_target
+    ;
+
+table_drop_constraint_simple
+    : DROP CONSTRAINT constraint_name drop_constraint_with_clause?;
+
+constraint_name: IDENTIFIER;
+
+drop_constraint_with_clause
+    : WITH LPAREN drop_constraint_option (COMMA drop_constraint_option)* RPAREN;
+
+drop_constraint_option : ONLINE EQ (ON | OFF)  ;
+
+table_drop : DROP drop_spec_list? ;
+
+drop_spec_list: drop_spec (COMMA drop_spec)* ;
+drop_spec
+    : drop_constraint_spec
+    | drop_column_spec
+    ;
+
+drop_constraint_spec
+    : (CONSTRAINT)? if_exists? constraint_name_list drop_constraint_with_clause? ;
+
+constraint_name_list
+    : constraint_name (COMMA constraint_name)*;
+
+if_exists: IF EXISTS;
+
+drop_column_spec
+    : COLUMN if_exists? column_name_list;
+
+column_name_list
+    : full_column_name (COMMA full_column_name)*;
 
 alter_index
     : ALTER INDEX (index_name | ALL) ON full_table_name alter_index_action SEMI?;

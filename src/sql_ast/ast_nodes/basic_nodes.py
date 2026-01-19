@@ -8,9 +8,11 @@ class SingleValueNode(ASTNode):
     def print(self, spacer="  ", level=0):
         self.self_print(spacer * level, self.value)
 
+
 class UserVariable(SingleValueNode):
     def print(self, spacer="  ", level=0):
         print(spacer * level, self.__class__.__name__ + ": " + self.value)
+
 
 class Variable(SingleValueNode):
     pass
@@ -389,11 +391,12 @@ class ColumnForeignKeyConstraint(ASTNode):
 
 
 class DefaultConstraint(ASTNode):
-    def __init__(self, default_value):
+    def __init__(self, default_value, with_values):
         self.default_value = default_value
+        self.with_values = with_values
 
     def print(self, spacer="  ", level=0):
-        self.self_print(spacer * level)
+        print(spacer * level, "DEFAULT CONSTRAINT"" With VALUES" if self.with_values else "")
         self.default_value.print(spacer, level + 1)
 
 
@@ -409,23 +412,37 @@ class TableConstraint(ASTNode):
 
 
 class PrimaryKeyTableConstraint(ASTNode):
-    def __init__(self, column_list, pk):
+    def __init__(self, column_list, pk, with_):
         self.column_list = column_list
         self.pk = pk
+        self.with_ = with_
 
     def print(self, spacer="  ", level=0):
         self.pk.print(spacer, level + 1)
         self.column_list.print(spacer, level + 1)
+        if self.with_:
+            self.with_.print(spacer, level + 1)
 
 
 class UniqueTableConstraint(ASTNode):
-    def __init__(self, column_list, unique):
+    def __init__(self, column_list, unique, with_):
         self.column_list = column_list
         self.unique = unique
+        self.with_ = with_
 
     def print(self, spacer="  ", level=0):
         self.unique.print(spacer, level + 1)
         self.column_list.print(spacer, level + 1)
+        if self.with_:
+            self.with_.print(spacer, level + 1)
+
+class PrimaryKeyColConstraint(ASTNode):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level, "PRIMARY KEY")
+
+class UniqueColConstraint(ASTNode):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level, "UNIQUE")
 
 
 class ForeignKeyTableConstraint(ASTNode):

@@ -4,7 +4,7 @@ options {
 	tokenVocab = SQLLexer;
 }
 
-import ExpressionParser, SQLParser;
+import ExpressionParser, SQLParser,CreateParser;
 
 where_clause: WHERE search_condition;
 delete_and_update_where_clause
@@ -73,13 +73,11 @@ nullability_clause
     ;
 
 datatype
-    : full_table_name
-    | single_word_data_type
+    : single_word_data_type
     | decimal_numeric_data_type
     | char_nchar_binary_data_type
     | varchar_nvarchar_varbinary_data_type
     | time_data_type
-
     ;
 
 single_word_data_type: INT
@@ -127,22 +125,12 @@ expression_alias: expression as_alias?;
 
 
 
-
-
-
-
-
-
-
-
-
 column_definition
     : default_column_definition
     | computed_column_definition
     | column_as
     ;
 
-default_column_definition: full_column_name column_type column_constraint_list;
 column_constraint_list: column_constraint*;
 
 column_as : full_column_name as_alias;
@@ -150,20 +138,13 @@ computed_column_definition
     : full_column_name AS expression PERSISTED?
     ;
 
-
-
-
-
-
-
-
 column_constraint
     : (CONSTRAINT IDENTIFIER)? column_constraint_body
     ;
 column_constraint_body
     : default_col_constraint
-    | PRIMARY KEY
-    | unique_constraint
+    | pk_col_constraint
+    | unique_col_constraint
     | single_word_constrain
     | identity_col_constraint
     | col_foreign_key_constraint
@@ -176,24 +157,14 @@ single_word_constrain:
     ;
 
 
+pk_col_constraint: PRIMARY KEY; // clusterd by default
+unique_col_constraint: UNIQUE ;
 
 identity_col_constraint: IDENTITY (LPAREN NUMBER_LITERAL COMMA NUMBER_LITERAL RPAREN)?;
 check_constraint
     : CHECK LPAREN search_condition RPAREN ;
-pk_constraint
-    : PRIMARY KEY (CLUSTERED | NONCLUSTERED)?
-      LPAREN index_column (COMMA index_column)* RPAREN
-      index_with_clause?
-    ;
 
-unique_constraint
-    : UNIQUE (CLUSTERED | NONCLUSTERED)?
-      LPAREN index_column (COMMA index_column)* RPAREN
-      index_with_clause?
-    ;
 col_foreign_key_constraint: (FOREIGN KEY)? REFERENCES full_table_name column_list;
-
-
 
 default_col_constraint
     : DEFAULT default_value_expr with_values_clause?;
@@ -213,41 +184,31 @@ niladic_function
     ;
 
 
-literal_with_optional_parentheses
-    : literal
-    | paren_literal
-    ;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 table_constraint
     : (CONSTRAINT IDENTIFIER)? table_constraint_body
     ;
 
 // no override
 table_constraint_body
-    : pk_constraint
+    : pk_table_constraint
     | unique_table_constraint
     | fk_table_constraint
     | check_constraint
     | default_table_constraint
     ;
 
+pk_table_constraint
+    : PRIMARY KEY (CLUSTERED | NONCLUSTERED)?
+      index_column_list
+      index_with_clause?
+    ;
 
-unique_table_constraint:
-unique_constraint column_list;
+unique_table_constraint
+    : UNIQUE (CLUSTERED | NONCLUSTERED)?
+      index_column_list
+      index_with_clause?
+    ;
+
 
 fk_table_constraint
     : FOREIGN KEY
@@ -343,4 +304,17 @@ partition_target
     : IDENTIFIER LPAREN full_column_name RPAREN
     | IDENTIFIER
     | DEFAULT
+    ;
+
+default_column_definition
+    : full_column_name column_type encrypted_with_clause? column_constraint_list
+    ;
+encrypted_with_clause
+    : ENCRYPTED WITH LPAREN encrypted_option (COMMA encrypted_option)* RPAREN
+    ;
+
+encrypted_option
+    : COLUMN_ENCRYPTION_KEY EQ full_column_name
+    | ENCRYPTION_TYPE EQ (DETERMINISTIC | RANDOMIZED)
+    | ALGORITHM EQ STRING_LITERAL
     ;

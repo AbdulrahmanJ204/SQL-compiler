@@ -14,7 +14,10 @@ create_statement
     ;
 
 create_table
-    : CREATE TABLE full_table_name create_table_body SEMI?;
+    : CREATE TABLE full_table_name create_table_body table_on_clause? SEMI?;
+
+table_on_clause
+    : ON partition_target;
 
 create_table_body
     : LPAREN create_table_element_list RPAREN;

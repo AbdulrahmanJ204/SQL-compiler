@@ -21,7 +21,8 @@ transaction_statement
 //BEGIN DISTRIBUTED { TRAN | TRANSACTION }
 //     [ transaction_name | @tran_name_variable ]
 //[ ; ]
-begin_ditributed_transaction:BEGIN DISTRIBUTED? (TRAN | TRANSACTION) transaction_name? SEMI?;
+begin_ditributed_transaction:BEGIN DISTRIBUTED (TRAN | TRANSACTION) transaction_name? SEMI?;
+
 //BEGIN { TRAN | TRANSACTION }
 //    [ { transaction_name | @tran_name_variable }
 //      [ WITH MARK [ 'description' ] ]
@@ -42,7 +43,7 @@ with_mark_clause
 //    [ WITH ( DELAYED_DURABILITY = { OFF | ON } ) ]
 //[ ; ]
 commit_transaction
-    : COMMIT ((TRAN | TRANSACTION) transaction_name? with_delay_durability_clause?)? SEMI?
+    : COMMIT ((TRAN | TRANSACTION) transaction_name?)? with_delay_durability_clause? SEMI?
     ;
 with_delay_durability_clause
     :  WITH DELAYED_DURABILITY EQ (OFF | ON) ;
