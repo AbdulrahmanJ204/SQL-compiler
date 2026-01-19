@@ -43,10 +43,14 @@ drop_index_with_clause
 
 drop_index_option
     : max_dop_expression_option
-    | ONLINE EQ (ON | OFF)
-    | MOVE TO drop_move_target
-    | FILESTREAM_ON drop_filestream_target
+    | drop_constraint_option
+    | move_to_drop_move_target
+    | filestream_drop_filestream_target
     ;
+
+move_to_drop_move_target: MOVE TO drop_move_target;
+
+filestream_drop_filestream_target: FILESTREAM_ON drop_filestream_target;
 
 drop_move_target
     : partition_target
