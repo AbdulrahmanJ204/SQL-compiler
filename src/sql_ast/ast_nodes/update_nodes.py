@@ -12,22 +12,22 @@ class UpdateStatementNode(ASTNode):
         self.delete_and_update_where_clause = delete_and_update_where_clause
 
     def print(self, spacer="  ", level=0):
-        print(spacer*level, "UPDATE")
+        print(spacer*level + "Update")
         if self.with_cte:
             self.with_cte.print(spacer,level+1)
 
         if self.top_clause:
             self.top_clause.print(spacer,level+1)
 
-        print(spacer*(level+1)+" Updated", end="")
-        self.table_or_variable.print("", 0)
+        # print(spacer*(level+1)+" Updated", end="")
+        self.table_or_variable.print(spacer, level+1)
 
         self.assignment_list.print(spacer,level+1)
         if self.output_clause:
             self.output_clause.print(spacer,level+1)
 
         if self.table_source_list:
-            print(spacer * (level + 1) + " FROM")
+            print(spacer * (level + 1) + "From : ")
             self.table_source_list.print(spacer,level+2)
 
         if self.delete_and_update_where_clause:
@@ -42,7 +42,7 @@ class UpdateNormalAssignment(ASTNode):
         self.source = source
 
     def print(self, spacer="  ", level=0):
-        print(spacer*level,"Normal Assignment")
+        print(spacer*level +"Normal Assignment")
         self.target.print(spacer,level+1)
         print(spacer*(level+1)+f" OP: {self.assignment_operator}")
         self.source.print(spacer,level+1)
@@ -55,7 +55,7 @@ class UpdateWriteAssignment(ASTNode):
         self.exp3 = exp3
 
     def print(self, spacer="  ", level=0):
-        print(spacer*level,"Write Assignment")
+        print(spacer*level +"Write Assignment")
         self.column.print(spacer,level+1)
         self.exp1.print(spacer,level+1)
         self.exp2.print(spacer,level+1)
@@ -68,7 +68,7 @@ class UpdateUdtMethodAssignment(ASTNode):
         self.arg_list = arg_list
 
     def print(self, spacer="  ", level=0):
-        print(spacer*level,"Udt Method Assignment")
+        print(spacer*level +"Udt Method Assignment")
         self.column.print(spacer,level+1)
         print(spacer * (level + 1)+f" id: {self.identifier}")
         if self.arg_list:

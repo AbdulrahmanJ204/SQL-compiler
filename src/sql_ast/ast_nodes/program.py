@@ -6,6 +6,6 @@ class Program(ASTNode):
         self.statements = statements
 
     def print(self, spacer="  ", level=1):
-        self.self_print(spacer * level)
+        print(spacer * level + "Program ")
         for statement in self.statements:
             statement.print(spacer, level + 1)

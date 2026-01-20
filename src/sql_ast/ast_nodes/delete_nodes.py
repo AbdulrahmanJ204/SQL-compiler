@@ -11,15 +11,15 @@ class DeleteStatementNode(ASTNode):
         self.delete_and_update_where_clause = delete_and_update_where_clause
 
     def print(self, spacer="  ", level=0):
-        print(spacer*level, "DELETE")
+        print(spacer*level + "Delete Statement:")
         if self.with_cte:
             self.with_cte.print(spacer,level+1)
 
         if self.top_clause:
             self.top_clause.print(spacer,level+1)
 
-        print(spacer*(level+1)+" DELETED", end="")
-        self.table_source.print("", 0)
+        # print(spacer*(level+1)+" DELETED", end="")
+        self.table_source.print(spacer , level+1)
 
         if self.output_clause:
             self.output_clause.print(spacer,level+1)

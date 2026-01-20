@@ -315,6 +315,7 @@ CHECK_EXPIRATION:'CHECK_EXPIRATION';
 DOUBLE_COLON : '::';
 IMPERSONATE:'IMPERSONATE';
 PROVIDER:'PROVIDER';
+FILTER_FACTOR: 'FILTER_FACTOR';
 DROP_EXISTING:'DROP_EXISTING';
 NUMERIC_ROUNDABORT:'NUMERIC_ROUNDABORT';
 ANSI_PADDING : 'ANSI_PADDING';
@@ -361,7 +362,7 @@ ALL_SPARSE_COLUMNS:'ALL_SPARSE_COLUMNS';
 //! ║━━━━━━━━━━━━<LITERALs>━━━━━━━━━━━━║
 //! ╚══════════════════════════════════╝
 NUMBER_LITERAL:
-	(DIGIT+ ( '.' DIGIT*)? | '.' DIGIT+) ('E' [+\-]? DIGIT+)? ;
+	([+-]?DIGIT+ ( '.' DIGIT*)? | '.' DIGIT+) ('E' [+\-]? DIGIT+)? ;
 
 TRUE: 'TRUE' ;
 FALSE: 'FALSE' ;
@@ -374,17 +375,42 @@ fragment BITFrag: [01];
 MONEY_LITERAL:
 	[$\u00A2\u00A3\u00A4\u00A5] NUMBER_LITERAL ;
 
-HEX_LITERAL: ('0' 'X' (( NEW_LINE_STRING | HEX_REP)+ |)) ;
-// {
-//       raw = self.text
-//       # Remove \r and \n that come after backslash
-//       raw = raw.replace("\\\r\n", "")
-//       raw = raw.replace("\\\n", "")
-//       raw = raw.replace("\\\r", "")
-//       if raw[-1] in ['x', 'X']:
-//             raw+="0"
-//       self.text = raw
-// };
+HEX_LITERAL: ('0' 'X' (( NEW_LINE_STRING | HEX_REP)+ |))
+ {
+ln = len(raw)
+i = 0
+ln = len(raw)
+txt = ""
+after_newline = False
+
+while i < ln:
+    if raw[i] == '\\' and i + 1 < ln and raw[i + 1] in ('\n', '\r'):
+        i += 2
+        if i < ln and raw[i - 1] == '\r' and raw[i] == '\n':
+            i += 1
+        after_newline = True
+        continue
+
+    if raw[i] in ('\n', '\r'):
+        if not after_newline:
+            txt += " "
+        after_newline = True
+        i += 1
+        if i < ln and raw[i - 1] == '\r' and raw[i] == '\n':
+            i += 1
+        continue
+
+    if after_newline and raw[i] in (' ', '\t'):
+        i += 1
+        continue
+
+    after_newline = False
+    txt += raw[i]
+    i += 1
+if txt[-1] in ['x', 'X']:
+     txt+="0"
+self.text = txt
+ };
 
 fragment HEX_REP: [0-9A-F];
 fragment NEW_LINE_STRING: '\\' '\r'? '\n';
@@ -394,7 +420,7 @@ STRING_LITERAL:
 		SINGLE_QUOTE (ESCAPED_QUOTE | NEW_LINE_STRING | ~['])* SINGLE_QUOTE
 	) {
 raw = self.text
-# Remove the first and last quote
+
 raw = raw[1:-1]
 ln = len(raw)
 i = 0

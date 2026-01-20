@@ -52,12 +52,9 @@ class SelectVisitor(SQLParserVisitor):
         return SelectQuantifier(quantifier, top)
 
     def visitSelect_list(self, ctx: SQLParser.Select_listContext):
-        if ctx.STAR():
-            return SelectList([Star()])
-        return SelectList(self.visit(ctx.select_list_item_list()))
+        return SelectList([self.visit(item_ctx) for item_ctx in ctx.select_list_item()])
 
-    def visitSelect_list_item_list(self, ctx: SQLParser.Select_list_item_listContext):
-        return [self.visit(item_ctx) for item_ctx in ctx.select_list_item()]
+
 
     def visitSelect_list_item(self, ctx:SQLParser.Select_list_itemContext):
         if ctx.DOT():

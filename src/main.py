@@ -1,16 +1,16 @@
 import argparse
 from antlr4 import FileStream, CommonTokenStream
-from antlr4.error.DiagnosticErrorListener import DiagnosticErrorListener
 
+
+from errors_listner import SQLErrorListener
 from generated.SQLLexer import SQLLexer
 from generated.SQLParser import SQLParser
 
 from sql_ast.ast_builder_visitor import ASTBuilderVisitor
-from visualizar import visualize_parse_tree
-
 
 
 def to_string_tree(root, symbolic_lexer_names, token_delimiter='"', show_token_types=True):
+    # Source : https://gist.github.com/bkiers/13f72ef15d8353814cc7cbb93e9cc742
     builder = []
     _to_string_tree_traverse(root, builder, symbolic_lexer_names, token_delimiter, show_token_types)
     return ''.join(builder)
@@ -53,15 +53,15 @@ def _to_string_tree_traverse(tree, builder, symbolic_lexer_names, token_delimite
                 child_list_stack.append(children)
 
 
-DEFAULT_TEST_FILE = "tests/delete_test.sql"
 
 def main():
     parser_cli = argparse.ArgumentParser(description="T-SQL Parser")
 
+    default_test_file = "../tests/test.sql"
     parser_cli.add_argument(
         "file",
         nargs="?",
-        default=DEFAULT_TEST_FILE,
+        default=default_test_file,
         help="SQL file to parse"
     )
 
@@ -73,11 +73,13 @@ def main():
 
     args = parser_cli.parse_args()
 
-    print(f"Parsing file: {args.file}")
-
     input_stream = FileStream(args.file, encoding='utf-8')
 
     lexer = SQLLexer(input_stream)
+    lexer.removeErrorListeners()
+    lexer_error_listener = SQLErrorListener()
+    lexer.addErrorListener(lexer_error_listener)
+
     token_stream = CommonTokenStream(lexer)
 
     if args.tokens:
@@ -85,28 +87,41 @@ def main():
         for token in token_stream.tokens:
             token_name = lexer.symbolicNames[token.type]
             print(f"{token_name:15} -> {token.text}")
-        token_stream.seek(0)
+            print(token)
+            print()
+
+
+    errors = lexer_error_listener.errors
+    if errors:
+        for err in errors:
+            print(
+                f"{err['type']} error at {err['line']}:{err['column']} → {err['message']}"
+            )
+        raise SyntaxError("Lexer Errors Found")
 
     parser = SQLParser(token_stream)
-
     parser.removeErrorListeners()
-    parser.addErrorListener(DiagnosticErrorListener())
+    parser_error_listener = SQLErrorListener()
+    parser.addErrorListener(parser_error_listener)
 
     tree = parser.program()
-    # print(tree.toStringTree(recog=parser))
-    # Visualize
+    errors = parser_error_listener.errors
+    if errors:
+        for err in errors:
+            print(
+                f"{err['type']} error at {err['line']}:{err['column']} → {err['message']}"
+            )
+        raise SyntaxError("Parser Errors Found")
 
     print(to_string_tree(tree, lexer.symbolicNames))
+
+
     visitor = ASTBuilderVisitor()
     ast = visitor.visit(tree)
 
     print("\nAST:")
-    ast.print()
-    visualize_parse_tree(parser, tree, title="T-SQL Parse Tree")
-
-
+    ast.print("    ")
 
 
 if __name__ == "__main__":
     main()
-

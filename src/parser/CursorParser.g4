@@ -11,7 +11,7 @@ import BasicParser, SelectParser;
    ======================= */
 
 declare_cursor
-    : DECLARE cursor_name pre_cursor_options? CURSOR cursor_definition SEMI?
+    : DECLARE cursor_name pre_cursor_options CURSOR cursor_definition SEMI?
     ;
 
 /*
