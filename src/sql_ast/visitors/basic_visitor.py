@@ -1,5 +1,4 @@
 from os import name
-from telnetlib import ENCRYPT
 
 from generated.SQLParser import SQLParser
 from generated.SQLParserVisitor import SQLParserVisitor
@@ -406,7 +405,7 @@ class BasicVisitor(SQLParserVisitor):
 
     def visitBegin_end_function_body(self, ctx: SQLParser.Begin_end_function_bodyContext):
         statements = ItemsList([self.visit(stmt) for stmt in ctx.statement()])
-        ret_value = self.visit(ctx.expression())
+        ret_value = self.visit(ctx.expression()) if ctx.expression() else None
         return BeginEndFunctionBody(ret_value, statements)
 
     def visitReturn_function_body(self, ctx: SQLParser.Return_function_bodyContext):

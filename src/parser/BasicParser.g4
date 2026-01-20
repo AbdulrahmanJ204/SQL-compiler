@@ -341,7 +341,7 @@ function_body
     : begin_end_function_body
     | return_function_body
     ;
-begin_end_function_body: BEGIN statement* RETURN expression END;
+begin_end_function_body: BEGIN statement* RETURN expression? END;
 return_function_body: RETURN (select_statement | LPAREN select_statement RPAREN);
 
 function_return_type

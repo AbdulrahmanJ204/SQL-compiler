@@ -1,5 +1,3 @@
-
--- Multi-statement TVF مع @return_variable TABLE (...)
 CREATE FUNCTION dbo.SplitInts (@list NVARCHAR(MAX))
 RETURNS @Result TABLE
 (
@@ -13,4 +11,26 @@ BEGIN
     FROM dbo.StringSplit(@list, ',');
 
     RETURN
+END;
+
+CREATE TABLE Employees (
+    ID INT PRIMARY KEY,
+    Name NVARCHAR(100),
+    Salary DECIMAL(10, 2)
+);
+
+CREATE VIEW ActiveEmployees AS
+SELECT * FROM Employees WHERE Salary > 0;
+
+CREATE INDEX idx_EmpName ON Employees(Name);
+
+CREATE USER MyUser FOR LOGIN MyLogin;
+
+CREATE LOGIN MyLogin WITH PASSWORD = 'StrongPassword123';
+
+CREATE FUNCTION GetSalary(@ID INT)
+RETURNS DECIMAL(10, 2)
+AS
+BEGIN
+    RETURN (SELECT Salary FROM Employees WHERE ID = @ID)
 END;

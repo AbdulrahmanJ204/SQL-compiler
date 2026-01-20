@@ -11,7 +11,7 @@ create_statement
     | create_user
     | create_login
     | grant_statement
-    |create_function
+    | create_function
     ;
 
 create_table
@@ -43,22 +43,28 @@ table_index_body
     ;
 
 table_index_rowstore
-    : (UNIQUE)? (CLUSTERED | NONCLUSTERED)?
-      LPAREN index_column (COMMA index_column)* RPAREN
+    : unique_clustered_clause?
+      index_colomn_list
       include_clause?
       where_clause_for_index?
       index_with_clause?
       index_on_clause?
     ;
 
+unique_clustered_clause: (UNIQUE)? (CLUSTERED | NONCLUSTERED);
+
 table_index_columnstore
-    : (CLUSTERED | NONCLUSTERED)? COLUMNSTORE
-      (LPAREN index_column (COMMA index_column)* RPAREN)?
+    : clustered_columnstroe_clause
+      index_colomn_list?
       include_clause?
       where_clause_for_index?
       index_with_clause?
       index_on_clause?
     ;
+
+clustered_columnstroe_clause: (CLUSTERED | NONCLUSTERED)? COLUMNSTORE;
+
+index_colomn_list: (LPAREN index_column (COMMA index_column)* RPAREN);
 
 create_index
     : CREATE UNIQUE? index_clustering? COLUMNSTORE? INDEX index_name
@@ -71,7 +77,6 @@ create_index
     ;
 
 index_on_clause : ON partition_target;
-
 
 index_clustering
     : CLUSTERED

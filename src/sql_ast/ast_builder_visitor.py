@@ -7,6 +7,7 @@ from sql_ast.ast_nodes.basic_nodes import Table, ColumnOrTable, ItemsList, Singl
 from sql_ast.visitors.alter_visitor import AlterVisitor
 from sql_ast.visitors.basic_visitor import BasicVisitor
 from sql_ast.visitors.control_flow_visitor import ControlFlowVisitor
+from sql_ast.visitors.create_visitor import CreateVisitor
 from sql_ast.visitors.cursor_visitor import CursorVisitor
 from sql_ast.visitors.delete_visitor import DeleteVisitor
 from sql_ast.visitors.drop_visitor import DropVisitor
@@ -22,7 +23,9 @@ from sql_ast.visitors.variable_visitor import VariableVisitor
 
 class ASTBuilderVisitor(ExpressionVisitor, BasicVisitor, SelectVisitor, CursorVisitor, TruncateVisitor, AlterVisitor,
                         VariableVisitor, InsertVisitor, UpdateVisitor, TransactVisitor, ControlFlowVisitor, OutputVisitor, DeleteVisitor,
-                        DropVisitor):
+                        DropVisitor, CreateVisitor):    ###################################################################
+    #             SQLParser Visit.
+    ###################################################################
 
     def visitProgram(self, ctx: SQLParser.ProgramContext):
         statements = []
