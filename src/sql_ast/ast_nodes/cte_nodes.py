@@ -7,7 +7,7 @@ class CommonTableExpression(ASTNode):
         self.query = query
 
     def print(self, spacer="  ", level=0):
-        print(spacer * level, f"CTE: {self.name}")
+        print(spacer * level + f"CTE: {self.name}")
 
         if self.column_list:
             print(spacer * (level + 1), "columns")
@@ -23,10 +23,10 @@ class SetSelectStatement(ASTNode):
 
 
     def print(self, spacer="  ", level=0):
-        print(spacer * level, "Set Operators")
+        print(spacer * level + "Set Operators")
         self.set_operators.print(spacer, level + 1)
 
-        print(spacer * level, "Select Statement")
+        print(spacer * level + "Select Statement")
         self.select_statement.print(spacer, level + 1)
 
 class SetSelectStatementList(ASTNode):
@@ -34,6 +34,6 @@ class SetSelectStatementList(ASTNode):
         self.items = items
 
     def print(self, spacer="  ", level=0):
-        print(spacer * level, "Set Select Statements")
+        print(spacer * level + "Set Select Statements")
         for item in self.items:
             item.print(spacer, level + 1)

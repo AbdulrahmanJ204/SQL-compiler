@@ -11,7 +11,7 @@ class InsertStatementNode(ASTNode):
         self.insert_source = insert_source
 
     def print(self, spacer="  ", level=0):
-        print(spacer*level, "INSERT")
+        print(spacer*level + "INSERT")
         if self.with_cte:
             self.with_cte.print(spacer,level+1)
 

@@ -8,7 +8,7 @@ class OutputStatement(ASTNode):
 
     def print(self, spacer="  ", level=0):
 
-        print(spacer * level, "Output into")
+        print(spacer * level + "Output into")
 
         print(spacer * (level+1), "Select List")
         self.select_list.print(spacer, level + 2)

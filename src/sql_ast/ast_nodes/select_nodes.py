@@ -10,7 +10,7 @@ class SelectStatement(ASTNode):
         self.order_by = order_by
 
     def print(self, spacer="  ", level=0):
-        self.self_print(spacer * level)
+        print(spacer * level + "Select Statement:")
         if self.cte:
             self.cte.print(spacer, level + 1)
         self.query.print(spacer, level + 1)
@@ -24,7 +24,7 @@ class SelectSetOperationsList(ASTNode):
 
     def print(self, spacer="  ", level=0):
         if len(self.lst) >0:
-            print(spacer * level, "SET OPERATIONS")
+            print(spacer * level + "Set Operations")
         for item in self.lst:
             item.print(spacer, level + 1)
 
@@ -45,9 +45,10 @@ class QueryExpression(ASTNode):
         self.operations = operations
 
     def print(self, spacer="  ", level=0):
-        self.left.print(spacer, level + 1)
+        print(spacer * level + "Query Expression:")
+        self.left.print(spacer, level+1)
         if self.operations:
-            self.operations.print(spacer, level + 1)
+            self.operations.print(spacer, level+1)
 
 
 class QuerySpecification(ASTNode):
@@ -62,14 +63,14 @@ class QuerySpecification(ASTNode):
         self.into = into
 
     def print(self, spacer="  ", level=0):
-        # self.self_print(spacer * level)
+        print(spacer * level + "Query Specification:")
         self.modifier.print(spacer, level + 1)
-        print(spacer * (level + 1), "Items:")
-        self.select_list.print(spacer, level + 2)
+        print(spacer * (level + 1), "Columns:")
+        self.select_list.print(spacer, level + 1)
 
         if self.from_:
             print(spacer * (level + 1), "From:")
-            self.from_.print(spacer, level + 1)
+            self.from_.print(spacer, level+2)
         if self.where:
             self.where.print(spacer, level + 1)
         if self.group_by:
@@ -87,7 +88,7 @@ class SelectQuantifier(ASTNode):
 
     def print(self, spacer="  ", level=0):
         if self.quantifier:
-            print(spacer * level, self.quantifier)
+            print(spacer * level + self.quantifier)
         if self.top:
             self.top.print(spacer, level + 1)
 
@@ -114,7 +115,7 @@ class TableStarSelectItem(ASTNode):
         self.table = table
 
     def print(self, spacer="  ", level=0):
-        print(spacer * level, "Table.*")
+        print(spacer * level + "Table.*")
         self.table.print(spacer, level + 1)
 
 

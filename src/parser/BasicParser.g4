@@ -37,7 +37,7 @@ join_type: INNER?
     ;
 
 table_source_list: table_source (COMMA table_source)*;
-table_source: table_source_item join_clause*;
+table_source: table_source_item join_clause* |function_call;
 table_source_item
     : (full_table_name  | derived_table | USER_VARIABLE) as_alias?
     ;
@@ -125,7 +125,7 @@ function_arguments
 
 expression_alias_list: expression_alias (COMMA expression_alias)*;
 expression_alias: expression as_alias?;
-
+// CONFIRMED
 
 
 
@@ -268,8 +268,7 @@ default_value
     | NULL
     ;
 
-return_data_type
-    : column_type | TABLE;
+
 
 index_name : IDENTIFIER;
 
@@ -286,20 +285,27 @@ resumable_option:RESUMABLE EQ (ON | OFF);
 
 max_dop_expression_option : MAXDOP EQ expression;
 mx_duration_expr_option :MAX_DURATION EQ expression (MINUTES)?;
-online_eq_online_option: ONLINE EQ online_option;
+online_eq_online_option: ONLINE EQ (ON low_priority_lock_wait_clause?| OFF);
 
 // End of Alter visitor
+pad_index_option  : PAD_INDEX EQ (ON | OFF);
+filter_factor_option
+    : FILTER_FACTOR EQ literal
+    ;
+drop_existing_option
+    : DROP_EXISTING EQ (ON | OFF)
+    ;
 index_common_option
-    : PAD_INDEX EQ (ON | OFF)
-    | FILLFACTOR EQ expression
-    | IGNORE_DUP_KEY EQ (ON | OFF)
-    | ALLOW_ROW_LOCKS EQ (ON | OFF)
-    | ALLOW_PAGE_LOCKS EQ (ON | OFF)
-    | DROP_EXISTING EQ (ON | OFF)
-    | ONLINE EQ online_option
-    | MAXDOP EQ expression
-    | RESUMABLE EQ (ON | OFF)
-    | MAX_DURATION EQ expression (MINUTES)?
+    : pad_index_option
+    | filter_factor_option
+    | ignore_dup_key_option
+    | allow_row_locks_option
+    | allow_page_locks_option
+    | drop_existing_option
+    | online_eq_online_option
+    | max_dop_expression_option
+    | resumable_option
+    | mx_duration_expr_option
     ;
 
 partition_target
@@ -316,17 +322,30 @@ encrypted_with_clause
     ;
 
 encrypted_option
-    : COLUMN_ENCRYPTION_KEY EQ full_column_name
-    | ENCRYPTION_TYPE EQ (DETERMINISTIC | RANDOMIZED)
-    | ALGORITHM EQ STRING_LITERAL
+    : column_encryption_key_option
+    | encryption_type_option
+    | algorithm_option
     ;
-function_body
-    : BEGIN statement* RETURN expression END
-    | RETURN select_statement
-    | RETURN LPAREN select_statement RPAREN
+column_encryption_key_option
+    :COLUMN_ENCRYPTION_KEY EQ full_column_name;
+
+encryption_type_option
+    : ENCRYPTION_TYPE EQ (DETERMINISTIC | RANDOMIZED)
     ;
 
+algorithm_option
+    : ALGORITHM EQ STRING_LITERAL
+    ;
+
+function_body
+    : begin_end_function_body
+    | return_function_body
+    ;
+begin_end_function_body: BEGIN statement* RETURN expression END;
+return_function_body: RETURN (select_statement | LPAREN select_statement RPAREN);
+
 function_return_type
-    : return_data_type
+    : column_type | TABLE
     | USER_VARIABLE  table_type_definition
+
     ;

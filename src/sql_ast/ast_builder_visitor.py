@@ -1,7 +1,7 @@
 from generated.SQLParser import SQLParser
 from generated.SQLParserVisitor import SQLParserVisitor
 from sql_ast.ast_nodes.program import Program
-from sql_ast.ast_nodes.statements import DeleteStatement, SetStatement, SetOption
+from sql_ast.ast_nodes.statements import  SetStatement, SetOption
 
 from sql_ast.ast_nodes.basic_nodes import Table, ColumnOrTable, ItemsList, SingleValueNode
 from sql_ast.visitors.alter_visitor import AlterVisitor

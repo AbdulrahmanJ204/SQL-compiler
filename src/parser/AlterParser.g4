@@ -12,7 +12,7 @@ alter_statement
     ;
 
 alter_table
-    : ALTER TABLE full_table_name alter_table_with_clause? table_action SEMI?
+    : ALTER TABLE full_table_name alter_table_with_clause? table_action (COMMA table_action)* SEMI?
     ;
 
 alter_table_with_clause
@@ -25,7 +25,7 @@ table_action
     | table_check_constraint
     | table_drop_constraint_simple
     | table_drop
-    | table_set_option
+    | alter_table_set_option
     | table_change_tracking
     ;
 table_change_tracking
@@ -34,11 +34,11 @@ table_change_tracking
 change_tracking_with_clause
     : WITH LPAREN TRACK_COLUMNS_UPDATED EQ (ON | OFF) RPAREN;
 
-table_set_option
-    : SET table_option_list;
-table_option_list: LPAREN table_option (COMMA table_option)* RPAREN;
+alter_table_set_option
+    : SET alter_table_option_list;
+alter_table_option_list: LPAREN alter_table_option (COMMA alter_table_option)* RPAREN;
 
-table_option
+alter_table_option
     : LOCK_ESCALATION EQ lock_escalation_value;
 lock_escalation_value
     : AUTO
@@ -85,7 +85,7 @@ alter_column_option
 
 
 table_add
-    : ADD table_add_item_list;
+    : ADD table_add_item_list ;
 
 table_add_item_list: table_add_item (COMMA table_add_item)*;
 
@@ -279,9 +279,7 @@ resumable_index_option
     | low_priority_lock_wait
     ;
 
-online_option
-    : ON low_priority_lock_wait_clause?
-    | OFF;
+
 low_priority_lock_wait_clause
     : LPAREN low_priority_lock_wait RPAREN;
 

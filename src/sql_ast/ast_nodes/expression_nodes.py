@@ -71,7 +71,10 @@ class ModExpression(BinaryExpression):
 
 
 class ComparisonExpression(BinaryExpression):
-    pass
+    def print(self, spacer="  ", level=0):
+        print(spacer * level+  f"Comparison: {self.operator}")
+        self.left.print(spacer, level + 1)
+        self.right.print(spacer, level + 1)
 
 
 class UnaryExpression(ASTNode):
