@@ -12,7 +12,7 @@ class UpdateStatementNode(ASTNode):
         self.delete_and_update_where_clause = delete_and_update_where_clause
 
     def print(self, spacer="  ", level=0):
-        print(spacer*level + "UPDATE")
+        print(spacer*level + "Update")
         if self.with_cte:
             self.with_cte.print(spacer,level+1)
 
@@ -27,7 +27,7 @@ class UpdateStatementNode(ASTNode):
             self.output_clause.print(spacer,level+1)
 
         if self.table_source_list:
-            print(spacer * (level + 1) + " FROM")
+            print(spacer * (level + 1) + "From : ")
             self.table_source_list.print(spacer,level+2)
 
         if self.delete_and_update_where_clause:

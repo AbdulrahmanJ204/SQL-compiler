@@ -168,6 +168,7 @@ set_index_option
     | ignore_dup_key_option
     | statistics_no_recompute_option
     | compression_delay_option
+
     ;
 
 allow_row_locks_option: ALLOW_ROW_LOCKS EQ (ON | OFF) ;
@@ -177,7 +178,7 @@ ignore_dup_key_option:IGNORE_DUP_KEY EQ (ON | OFF);
 statistics_no_recompute_option : STATISTICS_NORECOMPUTE EQ (ON | OFF);
 compression_delay_option:COMPRESSION_DELAY EQ compression_delay_value (MINUTES)?;
 compression_delay_value: NUMBER_LITERAL | expression;
-
+fill_factor_option : FILLFACTOR EQ literal;
 
 rebuild_clause : REBUILD rebuild_body ;
 
@@ -219,6 +220,7 @@ rebuild_index_option
     | sort_in_temp_db_option
     |data_compression_option_with_rebuild_partitions
     | xml_compression_option_with_rebuild
+    |fill_factor_option
     ;
 
 xml_compression_option:

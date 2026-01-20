@@ -52,7 +52,8 @@ class OrderByItem(ASTNode):
         self.asc = asc
 
     def print(self, spacer="  ", level=0):
-        print(spacer * level + "ASC" if self.asc else "DESC")
+
+        print(spacer * level + ("Ascending" if self.asc else "Descending") + " :")
         self.expression.print(spacer, level + 1)
 
 
@@ -66,7 +67,7 @@ class OrderByOffset(ASTNode):
         print(spacer * (level + 1) + "OFFSET : ")
         self.offset.print(spacer, level + 2)
         if self.fetch_next_rows_only:
-            print(spacer * (level + 1), "ONLY NEXT ROWS :")
+            print(spacer * (level + 1)+ "ONLY NEXT ROWS :")
             self.fetch_next_rows_only.print(spacer, level + 2)
 
 
@@ -119,9 +120,10 @@ class WhereClause(ASTNode):
         self.is_cursor = is_cursor
 
     def print(self, spacer="  ", level=0):
-        self.self_print(spacer * level)
+        print(spacer*level + "Where " , end= '')
         if self.is_cursor:
-            print(spacer * (level + 2), "CURRENT OF :")
+            print( "CURRENT OF " , end="")
+        print(":")
         self.condition.print(spacer, level + 1)
 
 
@@ -172,7 +174,7 @@ class FunctionCall(ASTNode):
         self.self_print(spacer * level, full_name)
 
         if self.args:
-            print(spacer * (level + 1), "Arguments:")
+            print(spacer * (level + 1)+ "Arguments:")
             self.args.print(spacer, level + 1)
 
 
@@ -259,14 +261,14 @@ class JoinsList(ItemsList):
 
 class InsertRecordsList(ItemsList):
     def print(self, spacer="  ", level=0):
-        print(spacer * level + "Records List")
+        print(spacer * level + "Records :")
         for record in self.items:
             record.print(spacer, level + 1)
 
 
 class InsertRecordValuesList(ItemsList):
     def print(self, spacer="  ", level=0):
-        print(spacer * level + "Values List")
+        print(spacer * level + "Record Values :")
         for value in self.items:
             value.print(spacer, level + 1)
 
@@ -280,7 +282,7 @@ class AssignmentList(ItemsList):
 
 class ArgumentList(ItemsList):
     def print(self, spacer="  ", level=0):
-        print(spacer * level + "ARGUMENT LIST")
+        print(spacer * level + "Arguments :")
         for value in self.items:
             value.print(spacer, level + 1)
 
@@ -395,7 +397,7 @@ class ComputedColumnDefinition(ASTNode):
         self.name.print(spacer, level + 1)
         self.expression.print(spacer, level + 1)
         if self.persisted:
-            print(spacer * (level + 1), "PERSISTED")
+            print(spacer * (level + 1)+ "PERSISTED")
 
 
 class ColumnConstraint(ASTNode):
@@ -416,8 +418,8 @@ class IdentityConstraint(ASTNode):
 
     def print(self, spacer="  ", level=0):
         self.self_print(spacer * level)
-        print(spacer * (level + 1), f"SEED : {self.seed}")
-        print(spacer * (level + 1), f"INCREMENT : {self.increment}")
+        print(spacer * (level + 1)+ f"SEED : {self.seed}")
+        print(spacer * (level + 1)+ f"INCREMENT : {self.increment}")
 
 
 class CheckConstraint(ASTNode):
@@ -451,7 +453,7 @@ class ColumnForeignKeyConstraint(ASTNode):
         self.referenced_column = referenced_column
 
     def print(self, spacer="  ", level=0):
-        print(spacer * (level + 1), "FOREIGN KEY REFERENCES :")
+        print(spacer * (level + 1)+ "FOREIGN KEY REFERENCES :")
         self.referenced_table.print(spacer, level + 2)
         self.referenced_column.print(spacer, level + 2)
 
@@ -520,9 +522,9 @@ class ForeignKeyTableConstraint(ASTNode):
         self.referenced_column = referenced_column
 
     def print(self, spacer="  ", level=0):
-        print(spacer * (level + 1), "FOREIGN KEY COLUMNS :")
+        print(spacer * (level + 1)+ "FOREIGN KEY COLUMNS :")
         self.column_list.print(spacer, level + 2)
-        print(spacer * (level + 1), "REFERENCES :")
+        print(spacer * (level + 1)+ "REFERENCES :")
         self.referenced_table.print(spacer, level + 2)
         self.referenced_column.print(spacer, level + 2)
 
@@ -533,9 +535,9 @@ class DefaultTableConstraint(ASTNode):
         self.default_value = default_value
 
     def print(self, spacer="  ", level=0):
-        print(spacer * (level + 1), "COLUMN :")
+        print(spacer * (level + 1)+ "COLUMN :")
         self.column.print(spacer, level + 2)
-        print(spacer * (level + 1), "DEFAULT VALUE :")
+        print(spacer * (level + 1)+ "DEFAULT VALUE :")
         self.default_value.print(spacer, level + 2)
 
 
@@ -555,7 +557,7 @@ class GoStatement(ASTNode):
     def print(self, spacer="  ", level=0):
         print(spacer * level + "GO STATEMENT :")
         if self.id:
-            print(spacer * (level + 1), f"Use : {self.id}")
+            print(spacer * (level + 1)+ f"Use : {self.id}")
 
 
 class PrintClause(ASTNode):
@@ -608,10 +610,10 @@ class FunctionParameter(ASTNode):
         if self.null_:
             self.null_.print(spacer, level + 1)
         if self.default_value:
-            print(spacer * (level + 1), "DEFAULT VALUE :")
+            print(spacer * (level + 1)+ "DEFAULT VALUE :")
             self.default_value.print(spacer, level + 2)
         if self.read_only:
-            print(spacer * (level + 1), "READ ONLY")
+            print(spacer * (level + 1)+ "READ ONLY")
 
 
 class IndexName(SingleValueNode):
@@ -701,6 +703,9 @@ class FilterFactorOption(SingleValueNode):
     def print(self, spacer="  ", level=0):
         print(spacer * level + f"FILTER FACTOR : {self.value}")
 
+class FillFactorOption(SingleValueNode):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + f"FILTER FACTOR : {self.value}")
 
 class PartitionTarget(ASTNode):
     def __init__(self, partition_name, column=None):
@@ -709,7 +714,7 @@ class PartitionTarget(ASTNode):
 
     def print(self, spacer="  ", level=0):
         print(spacer * level + f"PARTITION TARGET : ")
-        print(spacer * (level + 1), "PARTITION NAME : " + self.partition_name)
+        print(spacer * (level + 1)+ "PARTITION NAME : " + self.partition_name)
         if self.column:
             self.column.print(spacer, level + 1)
 
@@ -732,7 +737,7 @@ class EncryptedWithClause(SingleExpressionNode):
 
 class ColumnEncryptionKeyOption(SingleExpressionNode):
     def print(self, spacer="  ", level=0):
-        print(spacer * level + "COLUMN ENCRYPTION KEY :")
+        print(spacer * level + "Column Encryption Key :")
         self.expression.print(spacer, level + 1)
 
 

@@ -22,9 +22,7 @@ from sql_ast.visitors.variable_visitor import VariableVisitor
 
 class ASTBuilderVisitor(ExpressionVisitor, BasicVisitor, SelectVisitor, CursorVisitor, TruncateVisitor, AlterVisitor,
                         VariableVisitor, InsertVisitor, UpdateVisitor, TransactVisitor, ControlFlowVisitor, OutputVisitor, DeleteVisitor,
-                        DropVisitor):    ###################################################################
-    #             SQLParser Visit.
-    ###################################################################
+                        DropVisitor):
 
     def visitProgram(self, ctx: SQLParser.ProgramContext):
         statements = []

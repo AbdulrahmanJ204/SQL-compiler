@@ -10,10 +10,10 @@ class CommonTableExpression(ASTNode):
         print(spacer * level + f"CTE: {self.name}")
 
         if self.column_list:
-            print(spacer * (level + 1), "columns")
+            print(spacer * (level + 1)+ "columns")
             self.column_list.print(spacer, level + 2)
 
-        print(spacer * (level + 1), "Query")
+        print(spacer * (level + 1)+ "Query")
         self.query.print(spacer, level + 2)
 
 class SetSelectStatement(ASTNode):

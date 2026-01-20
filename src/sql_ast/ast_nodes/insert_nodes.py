@@ -11,18 +11,18 @@ class InsertStatementNode(ASTNode):
         self.insert_source = insert_source
 
     def print(self, spacer="  ", level=0):
-        print(spacer*level + "INSERT")
+        print(spacer*level + "Insert : ")
         if self.with_cte:
             self.with_cte.print(spacer,level+1)
 
         if self.top_clause:
             self.top_clause.print(spacer,level+1)
 
-        print(spacer*(level+1)+" INTO", end="")
-        self.table_or_variable.print("", 0)
+        print(spacer*(level+1)+"Into : ")
+        self.table_or_variable.print(spacer,level+2)
 
         if self.column_list:
-            print(spacer*(level+1)+" FROM")
+            print(spacer*(level+1)+"Form :")
             self.column_list.print(spacer,level+2)
         if self.output_clause:
             self.output_clause.print(spacer,level+1)

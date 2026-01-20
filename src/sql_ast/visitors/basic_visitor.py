@@ -380,6 +380,8 @@ class BasicVisitor(SQLParserVisitor):
 
     def visitFilter_factor_option(self, ctx: SQLParser.Filter_factor_optionContext):
         return FilterFactorOption(ctx.literal().getText())
+    def visitFill_factor_option(self, ctx: SQLParser.Fill_factor_optionContext):
+        return FillFactorOption(ctx.literal().getText())
 
     def visitDrop_existing_option(self, ctx: SQLParser.Drop_existing_optionContext):
         return DropExistingOption(ctx.ON() is not None)

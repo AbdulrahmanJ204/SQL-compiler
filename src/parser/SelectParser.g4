@@ -40,11 +40,7 @@ select_modifier
     ;
 
 select_list
-    : STAR
-    | select_list_item_list
-    ;
-
-select_list_item_list : select_list_item (COMMA select_list_item)*;
+     : select_list_item (COMMA select_list_item)*;
 
 select_list_item
     : full_table_name DOT STAR

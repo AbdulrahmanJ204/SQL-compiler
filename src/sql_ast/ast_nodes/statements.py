@@ -11,7 +11,7 @@ class SetStatement(ASTNode):
     def print(self,spacer = "  ", level=0):
         self.self_print(spacer * level , " ON "if self.on else " OFF " )
         if self.is_identity_insert:
-            print(spacer * level , "IDENTITY_INSERT")
+            print(spacer * level , "Identity Insert")
         self.table.print(spacer, level + 1)
 
 class SetOption(SingleValueNode):

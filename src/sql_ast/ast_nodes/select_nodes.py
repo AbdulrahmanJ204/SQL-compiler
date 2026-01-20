@@ -65,11 +65,10 @@ class QuerySpecification(ASTNode):
     def print(self, spacer="  ", level=0):
         print(spacer * level + "Query Specification:")
         self.modifier.print(spacer, level + 1)
-        print(spacer * (level + 1), "Columns:")
         self.select_list.print(spacer, level + 1)
 
         if self.from_:
-            print(spacer * (level + 1), "From:")
+            print(spacer * (level + 1)+ "From:")
             self.from_.print(spacer, level+2)
         if self.where:
             self.where.print(spacer, level + 1)
@@ -99,7 +98,7 @@ class TopSpec(ASTNode):
         self.percent = percent
 
     def print(self, spacer="  ", level=0):
-        to_print = "TOP PERCENT" if self.percent else "TOP"
+        to_print = "Top Percent" if self.percent else "Top :"
         print(spacer * level + to_print)
         self.value.print(spacer, level + 1)
 
@@ -107,7 +106,7 @@ class TopSpec(ASTNode):
 class Star(ASTNode):
 
     def print(self, spacer="  ", level=0):
-        print(spacer * level , "STAR")
+        print(spacer * level + "Star (*)")
 
 
 class TableStarSelectItem(ASTNode):
@@ -124,7 +123,10 @@ class ExpressionSelectItem(ExpressionAlaisNode):
 
 
 class AssignmentSelectItem(BinaryExpression):
-    pass
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Assignment : " + self.operator)
+        self.left.print(spacer, level + 1)
+        self.right.print(spacer, level + 1)
 
 
 class SelectList(ASTNode):
@@ -132,5 +134,7 @@ class SelectList(ASTNode):
         self.items = items
 
     def print(self, spacer="  ", level=0):
+
+        print(spacer * level+ "Columns:")
         for item in self.items:
-            item.print(spacer, level)
+            item.print(spacer, level+1)
