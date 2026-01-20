@@ -20,7 +20,7 @@ class Variable(SingleValueNode):
 
 class Literal(SingleValueNode):
     def print(self, spacer="  ", level=0):
-        self.self_print(spacer * level + "Literal: " + self.value)
+        print(spacer * level + "Literal: " + self.value)
 
 
 class GroupBy(ASTNode):
@@ -128,7 +128,9 @@ class StatementBlock(ASTNode):
 
 
 class Alias(SingleExpressionNode):
-    pass
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Alias :")
+        self.expression.print(spacer, level + 1)
 
 
 class Having(SingleExpressionNode):
@@ -140,7 +142,7 @@ class Table(ASTNode):  # full_table_name
         self.name = name
 
     def print(self, spacer="  ", level=0):
-        self.self_print(spacer * level, self.name)
+        print(spacer * level +"Table Name : "+ self.name)
 
 
 class ColumnOrTable(ASTNode):
@@ -148,7 +150,7 @@ class ColumnOrTable(ASTNode):
         self.name = name
 
     def print(self, spacer="  ", level=0):
-        self.self_print(spacer * level, self.name)
+        print(spacer * level + "Column : " +  self.name)
 
 
 class FunctionCall(ASTNode):
@@ -172,7 +174,8 @@ class DerivedTable(SingleExpressionNode):
 
 class TableSourceItem(ExpressionAlaisNode):
     def print(self, spacer="  ", level=0):
-        self.expression.print(spacer, level + 1)
+        print(spacer * level + "Table Source Details :")
+        self.expression.print(spacer, level+1)
         if self.alias:
             self.alias.print(spacer, level + 1)
 
@@ -182,9 +185,9 @@ class TableSourceList(ASTNode):
         self.sources = sources
 
     def print(self, spacer="  ", level=0):
-        # self.self_print(spacer * level)
-        for i, src in enumerate(self.sources):
-            src.print(spacer, level)
+        print(spacer * level + "Table Sources:")
+        for src in self.sources:
+            src.print(spacer, level+1)
 
 
 class JoinType(ASTNode):
@@ -192,7 +195,7 @@ class JoinType(ASTNode):
         self.name = name
 
     def print(self, spacer="  ", level=0):
-        self.self_print(spacer * level, self.name)
+        print(spacer * level + "Type : "+  self.name)
 
 
 class Join(ASTNode):
@@ -202,8 +205,8 @@ class Join(ASTNode):
         self.join_condition = join_condition
 
     def print(self, spacer="  ", level=0):
-        self.self_print(spacer * level)
-        self.table.print(spacer, level + 1)
+        print(spacer * level + "Join:")
+        self.table.print(spacer, level +1)
         self.join_type.print(spacer, level + 1)
         self.join_condition.print(spacer, level + 1)
 
@@ -215,10 +218,11 @@ class TableSource(ASTNode):
 
     def print(self, spacer="  ", level=0):
         # self.self_print(spacer * level)
-        self.table.print(spacer, level + 1)
+        print(spacer * level + "Table Source:")
+        self.table.print(spacer, level+1)
         if self.joins:
-            for join in self.joins:
-                join.print(spacer, level + 2)
+            self.joins.print(spacer, level+1 )
+
 
 
 class ItemsList(ASTNode):
@@ -232,6 +236,14 @@ class ItemsList(ASTNode):
             else:
                 print(spacer * level + "Warning : Null Node")
 
+class JoinsList(ItemsList):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "JOINS:")
+        if len(self.items) == 0:
+            print(spacer * (level + 1) + "No Joins")
+            return
+        for join in self.items:
+            join.print(spacer, level + 1)
 
 class InsertRecordsList(ItemsList):
     def print(self, spacer="  ", level=0):
@@ -249,7 +261,7 @@ class InsertRecordValuesList(ItemsList):
 
 class AssignmentList(ItemsList):
     def print(self, spacer="  ", level=0):
-        print(spacer * level + "ASSIGNMENT LIST")
+        print(spacer * level + "Assignment: ")
         for value in self.items:
             value.print(spacer, level + 1)
 
@@ -353,7 +365,11 @@ class ColumnDefinition(ASTNode):
 
 
 class ColumnAs(ExpressionAlaisNode):
-    pass
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Column :")
+        self.expression.print(spacer, level + 1)
+        if self.alias:
+            self.alias.print(spacer, level + 1)
 
 
 class ComputedColumnDefinition(ASTNode):
@@ -607,6 +623,7 @@ class ChangeTrackingWithClause(OptionOnOff):
     def print(self, spacer="  ", level=0):
         
         print(spacer * level + f"With Track Columns Updated : {"ON" if self.on else "OFF"}")
+
 class AllowRowLocks(OptionOnOff):
     def print(self, spacer="  ", level=0):
         print(spacer * level + "Allow Row Locks: " + ("ON" if self.on else "OFF"))

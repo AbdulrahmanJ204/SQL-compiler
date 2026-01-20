@@ -26,14 +26,14 @@ class AlterVisitor(SQLParserVisitor):
         on = ctx.ON() is not None
         return ChangeTrackingWithClause(on)
 
-    def visitTable_set_option(self, ctx: SQLParser.Table_set_optionContext):
-        return SetTableOption(self.visit(ctx.table_option_list()))
+    def visitAlter_table_set_option(self, ctx: SQLParser.Alter_table_set_optionContext):
+        return SetTableOption(self.visit(ctx.alter_table_option_list()))
 
-    def visitTable_option_list(self, ctx: SQLParser.Table_option_listContext):
-        return ItemsList([self.visit(option) for option in ctx.table_option()])
+    def visitAlter_table_option_list(self, ctx: SQLParser.Alter_table_option_listContext):
+        return ItemsList([self.visit(option) for option in ctx.alter_table_option()])
 
-    def visitTable_option(self, ctx: SQLParser.Table_optionContext):
-        return TableOptionLeaf(ctx.lock_escalation_value().getText())
+    def visitAlter_table_option(self, ctx: SQLParser.Alter_table_optionContext):
+        return AlterTableOptionLeaf(ctx.lock_escalation_value().getText())
 
     def visitTable_alter_column(self, ctx: SQLParser.Table_alter_columnContext):
         col = self.visit(ctx.full_column_name())

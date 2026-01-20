@@ -19,8 +19,8 @@ class UpdateStatementNode(ASTNode):
         if self.top_clause:
             self.top_clause.print(spacer,level+1)
 
-        print(spacer*(level+1)+" Updated", end="")
-        self.table_or_variable.print("", 0)
+        # print(spacer*(level+1)+" Updated", end="")
+        self.table_or_variable.print(spacer, level+1)
 
         self.assignment_list.print(spacer,level+1)
         if self.output_clause:

@@ -90,7 +90,7 @@ class BasicVisitor(SQLParserVisitor):
         if ctx.function_call():
             return self.visit(ctx.function_call())
         src_item = self.visit(ctx.table_source_item())
-        joins = [self.visit(join) for join in ctx.join_clause()]
+        joins = JoinsList([self.visit(join) for join in ctx.join_clause()])
         return TableSource(src_item, joins)
 
     def visitTable_source_item(self, ctx: SQLParser.Table_source_itemContext):
@@ -324,7 +324,7 @@ class BasicVisitor(SQLParserVisitor):
 
     def visitLiteral(self, ctx: SQLParser.LiteralContext):
 
-        return Literal(ctx.getText())
+        return Literal(ctx.getChild(0).getText())
 
     def visitWith_partition_number_expression(self, ctx: SQLParser.With_partition_number_expressionContext):
         return WithPartitionNumberExpression(self.visit(ctx.partition_number_expression_list()))

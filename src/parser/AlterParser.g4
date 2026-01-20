@@ -25,7 +25,7 @@ table_action
     | table_check_constraint
     | table_drop_constraint_simple
     | table_drop
-    | table_set_option
+    | alter_table_set_option
     | table_change_tracking
     ;
 table_change_tracking
@@ -34,11 +34,11 @@ table_change_tracking
 change_tracking_with_clause
     : WITH LPAREN TRACK_COLUMNS_UPDATED EQ (ON | OFF) RPAREN;
 
-table_set_option
-    : SET table_option_list;
-table_option_list: LPAREN table_option (COMMA table_option)* RPAREN;
+alter_table_set_option
+    : SET alter_table_option_list;
+alter_table_option_list: LPAREN alter_table_option (COMMA alter_table_option)* RPAREN;
 
-table_option
+alter_table_option
     : LOCK_ESCALATION EQ lock_escalation_value;
 lock_escalation_value
     : AUTO

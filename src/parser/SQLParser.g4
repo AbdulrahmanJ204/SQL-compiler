@@ -40,7 +40,10 @@ set_option_name_list
     : set_option_name (COMMA set_option_name)*;
 
 
+
+
 set_option_name
     : ANSI_PADDING|NUMERIC_ROUNDABORT| NOCOUNT| ANSI_WARNINGS | CONCAT_NULL_YIELDS_NULL | ARITHABORT | QUOTED_IDENTIFIER | ANSI_NULLS ;
+
 
 

@@ -95,7 +95,7 @@ index_with_clause
 index_option
     : index_common_option
     | DATA_COMPRESSION EQ (NONE | ROW | PAGE)
-    | XML_COMPRESSION EQ (ON | OFF)
+    | xml_compression_option
     ;
 
 create_view
@@ -130,7 +130,7 @@ from_external_provider_clause
 
 limited_user_option
     : DEFAULT_SCHEMA EQ full_table_name
-    | ALLOW_ENCRYPTED_VALUE_MODIFICATIONS EQ (ON | OFF)
+    | allow_encrypted_value_modifications_user_option
     ;
 
 with_limited_user_options
@@ -142,7 +142,7 @@ with_user_options
 
 create_user_option
     : DEFAULT_SCHEMA EQ full_table_name
-    | DEFAULT_LANGUAGE EQ default_language_value
+    | default_language_eq_user_option
     | SID EQ sid_value
     ;
 
@@ -165,8 +165,8 @@ create_login_core
 
 create_login_option
     : DEFAULT_DATABASE EQ full_table_name
-    | DEFAULT_LANGUAGE EQ default_language_value
-    | CHECK_POLICY EQ (ON | OFF)
+    | default_language_eq_user_option
+    | CHECK_POLICY EQ (ON | OFF) // There is a node in basic nodes it name is on off option, you can inherit it.
     | CHECK_EXPIRATION EQ (ON | OFF)
     | SID EQ sid_value
     ;
@@ -183,12 +183,12 @@ grant_statement
 grant_target
     : USER DOUBLE_COLON user_name;
 
-table_with_clause: WITH LPAREN table_option (COMMA table_option)* RPAREN;
+table_with_clause: WITH LPAREN table_option_create (COMMA table_option_create)* RPAREN;
 
-table_option
+table_option_create
     : DATA_COMPRESSION EQ data_compression_kind table_partitions_clause?
     | LOCK_ESCALATION EQ lock_escalation_value
-    | XML_COMPRESSION EQ (ON | OFF)
+    | xml_compression_option
     ;
 
 data_compression_kind

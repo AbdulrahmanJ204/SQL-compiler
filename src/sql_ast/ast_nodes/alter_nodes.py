@@ -52,7 +52,7 @@ class SetTableOption(ASTNode):
         self.options_list.print(spacer, level + 1)
 
 
-class TableOptionLeaf(SingleValueNode):
+class AlterTableOptionLeaf(SingleValueNode):
     def print(self, spacer="  ", level=0):
         print(spacer * level + f"Lock Escalation : {self.value}")
 
