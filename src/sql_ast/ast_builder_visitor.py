@@ -18,11 +18,12 @@ from sql_ast.visitors.transact_visitor import TransactVisitor
 from sql_ast.visitors.truncate_visitor import TruncateVisitor
 from sql_ast.visitors.update_visitor import UpdateVisitor
 from sql_ast.visitors.variable_visitor import VariableVisitor
+from sql_ast.visitors.create_visitor import CreateVisitor
 
 
 class ASTBuilderVisitor(ExpressionVisitor, BasicVisitor, SelectVisitor, CursorVisitor, TruncateVisitor, AlterVisitor,
                         VariableVisitor, InsertVisitor, UpdateVisitor, TransactVisitor, ControlFlowVisitor, OutputVisitor, DeleteVisitor,
-                        DropVisitor):    ###################################################################
+                        DropVisitor, CreateVisitor):    ###################################################################
     #             SQLParser Visit.
     ###################################################################
 
