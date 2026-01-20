@@ -110,7 +110,7 @@ class CreateVisitor(SQLParserVisitor):
         if ctx.index_common_option():
             return self.visit(ctx.index_common_option())
         elif ctx.DATA_COMPRESSION():
-            compression_kind = ctx.getChild(2).getText()  # NONE, ROW, PAGE
+            compression_kind = ctx.getChild(2).getText()
             return IndexOption("DATA_COMPRESSION", SingleValueNode(compression_kind))
         elif ctx.xml_compression_option():
             return self.visit(ctx.xml_compression_option())
