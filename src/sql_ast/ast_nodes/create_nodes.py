@@ -169,7 +169,7 @@ class CreateUser(ASTNode):
 
 class CreateUserCore(ASTNode):
     def __init__(self, core_type, login_name=None, password=None, options=None):
-        self.core_type = core_type  # 'FOR_LOGIN', 'WITH_PASSWORD', 'WITHOUT_LOGIN', 'LIMITED_OPTIONS', 'EXTERNAL_PROVIDER'
+        self.core_type = core_type
         self.login_name = login_name
         self.password = password
         self.options = options
