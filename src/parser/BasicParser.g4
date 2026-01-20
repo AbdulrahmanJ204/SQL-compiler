@@ -286,20 +286,20 @@ resumable_option:RESUMABLE EQ (ON | OFF);
 
 max_dop_expression_option : MAXDOP EQ expression;
 mx_duration_expr_option :MAX_DURATION EQ expression (MINUTES)?;
-online_eq_online_option: ONLINE EQ online_option;
+online_eq_online_option: ONLINE EQ (ON low_priority_lock_wait_clause?| OFF);
 
 // End of Alter visitor
 index_common_option
     : PAD_INDEX EQ (ON | OFF)
     | FILLFACTOR EQ expression
-    | IGNORE_DUP_KEY EQ (ON | OFF)
-    | ALLOW_ROW_LOCKS EQ (ON | OFF)
-    | ALLOW_PAGE_LOCKS EQ (ON | OFF)
+    | ignore_dup_key_option
+    | allow_row_locks_option
+    | allow_page_locks_option
     | DROP_EXISTING EQ (ON | OFF)
-    | ONLINE EQ online_option
-    | MAXDOP EQ expression
-    | RESUMABLE EQ (ON | OFF)
-    | MAX_DURATION EQ expression (MINUTES)?
+    | online_eq_online_option
+    | max_dop_expression_option
+    | resumable_option
+    | mx_duration_expr_option
     ;
 
 partition_target

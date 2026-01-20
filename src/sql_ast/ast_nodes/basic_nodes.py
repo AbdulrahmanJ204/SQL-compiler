@@ -6,12 +6,12 @@ class SingleValueNode(ASTNode):
         self.value = value
 
     def print(self, spacer="  ", level=0):
-        self.self_print(spacer * level, self.value)
+        self.self_print(spacer * level + self.value)
 
 
 class UserVariable(SingleValueNode):
     def print(self, spacer="  ", level=0):
-        print(spacer * level+self.__class__.__name__ + ": " + self.value)
+        print(spacer * level + self.__class__.__name__ + ": " + self.value)
 
 
 class Variable(SingleValueNode):
@@ -226,13 +226,18 @@ class ItemsList(ASTNode):
 
     def print(self, spacer="  ", level=0):
         for item in self.items:
-            item.print(spacer, level)
+            if item:
+                item.print(spacer, level)
+            else:
+                print(spacer * level + "Warning : Null Node")
+
 
 class InsertRecordsList(ItemsList):
     def print(self, spacer="  ", level=0):
         print(spacer * level, "Records List")
         for record in self.items:
             record.print(spacer, level + 1)
+
 
 class InsertRecordValuesList(ItemsList):
     def print(self, spacer="  ", level=0):
@@ -247,28 +252,34 @@ class AssignmentList(ItemsList):
         for value in self.items:
             value.print(spacer, level + 1)
 
+
 class ArgumentList(ItemsList):
     def print(self, spacer="  ", level=0):
         print(spacer * level, "ARGUMENT LIST")
         for value in self.items:
             value.print(spacer, level + 1)
 
+
 class CursorUpdateColumnsList(ItemsList):
     def print(self, spacer="  ", level=0):
-        print (spacer*level, "OF: ")
+        print(spacer * level, "OF: ")
         for column in self.items:
             column.print(spacer, level + 1)
+
 
 class FetchIntoClauseList(ItemsList):
     def print(self, spacer="  ", level=0):
         for var in self.items:
             var.print(spacer, level)
 
+
 class DefaultValue(ASTNode):
     def __init__(self, default_text):
         self.default_text = default_text
+
     def print(self, spacer="  ", level=0):
         print(spacer * level, "Default Value")
+
 
 class ColumnList(ItemsList):
     pass
@@ -459,9 +470,11 @@ class UniqueTableConstraint(ASTNode):
         if self.with_:
             self.with_.print(spacer, level + 1)
 
+
 class PrimaryKeyColConstraint(ASTNode):
     def print(self, spacer="  ", level=0):
         print(spacer * level, "PRIMARY KEY")
+
 
 class UniqueColConstraint(ASTNode):
     def print(self, spacer="  ", level=0):

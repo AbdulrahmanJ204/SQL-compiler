@@ -190,12 +190,327 @@ class DropConstraintSpec(ASTNode):
             print(spacer * (level + 1) + "Drop With:")
             self.drop_with_clause.print(spacer, level + 2)
 
+
 class DropColumnSpec(ASTNode):
     def __init__(self, column_list, if_exists):
         self.column_list = column_list
         self.if_exists = if_exists
 
-
     def print(self, spacer="  ", level=0):
         print(spacer * level + f"Drop Columns{" If Exists" if self.if_exists else ""}:")
         self.column_list.print(spacer, level + 1)
+
+
+class AlterIndex(ASTNode):
+    def __init__(self, index, table, action):
+        self.index = index
+        self.table = table
+        self.action = action
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + f"Alter Index: {self.index}")
+        self.table.print(spacer, level + 1)
+        self.action.print(spacer, level + 1)
+
+
+class SingleWordAlterIndexAction(SingleValueNode):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Action : " + self.value)
+
+
+class SetIndexOptionClause(ASTNode):
+    def __init__(self, index_option_list):
+        self.index_option_list = index_option_list
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Set Index Options:")
+        self.index_option_list.print(spacer, level + 1)
+
+
+class AllowRowLocks(OptionOnOff):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Allow Row Locks: " + ("ON" if self.on else "OFF"))
+
+
+class AllowPageLocks(OptionOnOff):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Allow Page Locks: " + ("ON" if self.on else "OFF"))
+
+
+class OptimizeForSequentialKey(OptionOnOff):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Optimize For Sequential Key: " + ("ON" if self.on else "OFF"))
+
+
+class IgnoreDupKey(OptionOnOff):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Ignore Duplicated Key: " + ("ON" if self.on else "OFF"))
+
+
+class StatisticsNoRecompute(OptionOnOff):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Statistics No Recompute : " + ("ON" if self.on else "OFF"))
+
+
+class ComperssionDelayOption(ASTNode):
+    def __init__(self, delay_value):
+        self.delay_value = delay_value
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * level, "Compression Delay :  ")
+        self.delay_value.print(spacer, level + 1)
+
+
+class RebuildClause(ASTNode):
+    def __init__(self, body):
+        self.body = body
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * level, "Rebuild Clause : ")
+        self.body.print(spacer, level + 1)
+
+
+class RebuildBody(ASTNode):
+    def __init__(self, par_eq, rebuild_options):
+        self.par_eq = par_eq
+        self.rebuild_options = rebuild_options
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Rebuild Body:")
+        if self.par_eq:
+            self.par_eq.print(spacer, level + 1)
+        if self.rebuild_options:
+            self.rebuild_options.print(spacer, level + 1)
+
+
+class PartitionEqualAll(ASTNode):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Partition Equal All ")
+
+
+class PartitionEqualLiteral(SingleValueNode):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + f"Partition Equal : {self.value} ")
+
+
+class RebuildWithOptions(SingleExpressionNode):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Rebuild With Options: ")
+        self.expression.print(spacer, level + 1)
+
+
+class ReorganizeClause(SingleExpressionNode):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Reorganize Clause: ")
+        self.expression.print(spacer, level + 1)
+
+
+class ReorganizeBody(ASTNode):
+    def __init__(self, par_eq, reorganize_options):
+        self.par_eq = par_eq
+        self.reorganize_options = reorganize_options
+
+    def print(self, spacer="  ", level=0):
+        if self.par_eq or self.reorganize_options:
+            print(spacer * level + "Reorganize Body: ", end="")
+        if self.par_eq:
+            self.par_eq.print("", 0)
+        if self.reorganize_options:
+            print()
+            self.reorganize_options.print(spacer, level + 1)
+
+
+class ReorganizeWithOptions(SingleExpressionNode):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Reorganize With Options: ")
+        self.expression.print(spacer, level + 1)
+
+
+class ResumeClause(SingleExpressionNode):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Resume Clause ")
+        if self.expression:
+            self.expression.print(spacer, level + 1)
+
+
+class ResumeWithOptions(SingleExpressionNode):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Resume With Options: ")
+        self.expression.print(spacer, level + 1)
+
+
+class XmlCompressionOption(OptionOnOff):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "XML Compression Option: " + ("ON" if self.on else "OFF"))
+
+
+class XmlCompressionOptionWithRebuild(ASTNode):
+    def __init__(self, xml_compression_option, rebuild_clause):
+        self.xml_compression_option = xml_compression_option
+        self.rebuild_clause = rebuild_clause
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "XML Compression Option: ")
+        self.xml_compression_option.print(spacer, level + 1)
+        if self.rebuild_clause:
+            self.rebuild_clause.print(spacer, level + 1)
+
+
+class StatisticsIncrementalOption(OptionOnOff):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Statistics Incremental Option: " + ("ON" if self.on else "OFF"))
+
+
+class SortInTempDBOption(OptionOnOff):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Sort In TempDB Option: " + ("ON" if self.on else "OFF"))
+
+
+class ResumableOption(OptionOnOff):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Resumable Option: " + ("ON" if self.on else "OFF"))
+
+
+class MaxDopExpressionOption(SingleExpressionNode):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "MaxDop Expression Option: ")
+        self.expression.print(spacer, level + 1)
+
+
+class RebuildCompressionKind(SingleValueNode):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + f"Rebuild Compression Kind : {self.value} ")
+
+
+class OnPartitionsClause(SingleExpressionNode):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "On Partitions: ")
+        self.expression.print(spacer, level + 1)
+
+
+class LobCompactionOption(OptionOnOff):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Lob Compaction Option: " + ("ON" if self.on else "OFF"))
+
+
+class CompressAllRowGroupsOption(OptionOnOff):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Compress All Row Groups Option: " + ("ON" if self.on else "OFF"))
+
+
+class OnlineOption(ASTNode):
+    def __init__(self, on, expression=None):
+        self.on = on
+        self.expression = expression
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + f"Online Option: {'ON' if self.on else 'OFF'}")
+        if self.expression:
+            self.expression.print(spacer, level + 2)
+
+
+class LowPriorityLockWait(ASTNode):
+    def __init__(self, mx_dur_mins, abort_after_wait):
+        self.mx_dur_mins = mx_dur_mins
+        self.abort_after_wait = abort_after_wait
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Low Priority Lock Wait: ")
+        self.mx_dur_mins.print(spacer, level + 1)
+        print(spacer * (level + 1) + f"Abort After Wait: {self.abort_after_wait}")
+
+
+class AlterViewStatement(ASTNode):
+    def __init__(self, table, select_st, col_list=None, attribute_clause=None, check_option=None):
+        self.table = table
+        self.col_list = col_list
+        self.attribute_clause = attribute_clause
+        self.select_st = select_st
+        self.check_option = check_option
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Alter View Statement: ")
+        self.table.print(spacer, level + 1)
+        if self.col_list:
+            print(spacer * (level + 1) + "Column List: ")
+            self.col_list.print(spacer, level + 2)
+        if self.attribute_clause:
+            self.attribute_clause.print(spacer, level + 2)
+        print(spacer * (level + 1) + "As : ")
+        self.select_st.print(spacer, level + 2)
+        if self.check_option:
+            print(spacer * (level + 1) + "Check Option: ")
+            self.check_option.print(spacer, level + 2)
+
+
+class WithViewAttributes(SingleExpressionNode):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "With View Attributes: ")
+        self.expression.print(spacer, level + 1)
+
+
+class AlterUserStatement(ASTNode):
+    def __init__(self, user_name, with_option):
+        self.user_name = user_name
+        self.with_option = with_option
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Alter User Statement: ")
+        self.user_name.print(spacer, level + 1)
+        self.with_option.print(spacer, level + 1)
+
+
+class UserNameNode(SingleValueNode):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + f"User Name: {self.value}")
+
+
+class WithUserOptions(SingleExpressionNode):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "With User Options: ")
+        self.expression.print(spacer, level + 1)
+
+
+class IdentifierEqualIdentifierOption(ASTNode):
+    def __init__(self, identifier, identifier_2):
+        self.identifier = identifier
+        self.identifier_2 = identifier_2
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + f"{self.identifier} = {self.identifier_2} ")
+
+class DefaultSchemaEqualOption(ASTNode):
+    def __init__(self, default_schema):
+        self.default_schema = default_schema
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + f"DEFAULT_SCHEMA = {self.default_schema} ")
+
+class LoginOption(ASTNode):
+    def __init__(self, login_name):
+        self.login_name = login_name
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + f"LOGIN = {self.login_name} ")
+
+class PasswordAndOldPasswordOption(ASTNode):
+    def __init__(self, password, old_password = None):
+        self.password = password
+        self.old_password = old_password
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + f"PASSWORD = {self.password} ")
+        if self.old_password:
+            print(spacer * level  + f"OLD_PASSWORD = {self.old_password} ")
+
+
+class DefaultLanguageOption(ASTNode):
+    def __init__(self, language):
+        self.language = language
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + f"DEFAULT_LANGUAGE = {self.language} ")
+
+class AllowEncryptedValueModification(OptionOnOff):
+    def print(self, spacer="  ", level=0):
+        print(spacer * level + "Allow Encrypted Value Modification : " + ("ON" if self.on else "OFF"))

@@ -279,9 +279,7 @@ resumable_index_option
     | low_priority_lock_wait
     ;
 
-online_option
-    : ON low_priority_lock_wait_clause?
-    | OFF;
+
 low_priority_lock_wait_clause
     : LPAREN low_priority_lock_wait RPAREN;
 
