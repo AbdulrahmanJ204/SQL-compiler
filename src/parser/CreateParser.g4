@@ -224,4 +224,4 @@ function_option
     ;
 
 execute_as_clause
-    : EXECUTE AS (CALLER | SELF | OWNER | LITERAL);
+    : EXECUTE AS (CALLER | SELF | OWNER | literal);
