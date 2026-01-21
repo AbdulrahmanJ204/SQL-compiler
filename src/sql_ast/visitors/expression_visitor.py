@@ -152,7 +152,9 @@ class ExpressionVisitor(SQLParserVisitor):
         return expr
 
     def visitPrimary_expression(self, ctx: SQLParser.Primary_expressionContext):
-        if ctx.expression():
+        if ctx.case_expression():
+            return self.visit(ctx.case_expression())
+        elif  ctx.expression():
             return self.visit(ctx.expression())
         elif ctx.full_column_name():
             return self.visit(ctx.full_column_name())
@@ -174,3 +176,47 @@ class ExpressionVisitor(SQLParserVisitor):
             raise NotImplementedError(
                 f"Unsupported primary_expression: {ctx.getText()}"
             )
+
+    def visitCase_expression(self, ctx: SQLParser.Case_expressionContext):
+        body = ctx.case_body()
+        return self.visit(body)
+
+    def visitSimple_case(self, ctx: SQLParser.Simple_caseContext):
+        input_expr = self.visit(ctx.expression())
+
+        when_clauses = []
+        for when_ctx in ctx.case_when_expression():
+            cond = self.visit(when_ctx.expression(0))  # WHEN expr
+            result = self.visit(when_ctx.expression(1))  # THEN expr
+            when_clauses.append((cond, result))
+
+        else_expr = None
+        if ctx.case_else_clause():
+            else_expr = self.visit(ctx.case_else_clause().expression())
+
+        return CaseExpression(
+            input_expr=input_expr,
+            when_clauses=when_clauses,
+            else_expr=else_expr
+        )
+
+    def visitSearched_case(self, ctx: SQLParser.Searched_caseContext):
+        when_clauses = []
+
+        for when_ctx in ctx.case_when_condition():
+            condition = self.visit(when_ctx.search_condition())
+            result = self.visit(when_ctx.expression())
+            when_clauses.append((condition, result))
+
+        else_expr = None
+        if ctx.case_else_clause():
+            else_expr = self.visit(ctx.case_else_clause().expression())
+
+        return CaseExpression(
+            input_expr=None,
+            when_clauses=when_clauses,
+            else_expr=else_expr
+        )
+
+    def visitCase_else_clause(self, ctx):
+        return self.visit(ctx.expression())

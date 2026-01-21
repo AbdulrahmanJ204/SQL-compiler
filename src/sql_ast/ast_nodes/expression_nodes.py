@@ -168,3 +168,25 @@ class ExistsExpression(ASTNode):
 
 class NotExpression(SingleExpressionNode):
     pass
+
+class CaseExpression(ASTNode):
+    def __init__(self, input_expr=None, when_clauses=None, else_expr=None):
+        self.input_expr = input_expr      # for SIMPLE CASE, else None
+        self.when_clauses = when_clauses or []  # list of (cond, result)
+        self.else_expr = else_expr
+
+    def print(self, spacer="  ", level=0):
+        print(spacer * (level+1) + "CASE")
+        if self.input_expr:
+            print(spacer * (level + 2) + "INPUT")
+            self.input_expr.print(spacer, level + 3)
+
+        for cond, result in self.when_clauses:
+            print(spacer * (level + 2) + "WHEN")
+            cond.print(spacer, level + 3)
+            print(spacer * (level + 2) + "THEN")
+            result.print(spacer, level + 3)
+
+        if self.else_expr:
+            print(spacer * (level + 2) + "ELSE")
+            self.else_expr.print(spacer, level + 3)

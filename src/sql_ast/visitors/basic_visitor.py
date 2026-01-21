@@ -1,5 +1,5 @@
 from os import name
-from telnetlib import ENCRYPT
+
 
 from generated.SQLParser import SQLParser
 from generated.SQLParserVisitor import SQLParserVisitor

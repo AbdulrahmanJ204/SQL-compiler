@@ -57,6 +57,7 @@ unary_expression: (PLUS | MINUS)* primary_expression;
 
 primary_expression:
 	LPAREN expression RPAREN
+	| case_expression
 	| full_column_name
 	| function_call
 	| datatype
@@ -66,3 +67,28 @@ primary_expression:
 	| SYSTEM_VARIABLE
 	| derived_table;
 
+
+case_expression
+    : CASE case_body END
+    ;
+case_body
+    : simple_case
+    | searched_case
+    ;
+simple_case
+    : expression case_when_expression+ case_else_clause?
+    ;
+
+case_when_expression
+    : WHEN expression THEN expression
+    ;
+searched_case
+    : case_when_condition+ case_else_clause?
+    ;
+
+case_when_condition
+    : WHEN search_condition THEN expression
+    ;
+case_else_clause
+    : ELSE expression
+    ;
