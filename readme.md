@@ -310,7 +310,7 @@ python src/main.py tests/your_test_file.sql
 
 ## License
 
-[ِA Students work so you are free to use]
+[ِA Students work so feel free to use it]
 
 ## Acknowledgments
 
