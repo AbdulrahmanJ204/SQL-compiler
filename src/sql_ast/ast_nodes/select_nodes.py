@@ -124,9 +124,9 @@ class ExpressionSelectItem(ExpressionAlaisNode):
 
 class AssignmentSelectItem(BinaryExpression):
     def print(self, spacer="  ", level=0):
-        print(spacer * level + "Assignment : " + self.operator)
-        self.left.print(spacer, level + 1)
-        self.right.print(spacer, level + 1)
+        print(spacer * (level +1) + "Assignment : " + self.operator)
+        self.left.print(spacer, level + 2)
+        self.right.print(spacer, level + 2)
 
 
 class SelectList(ASTNode):
@@ -137,4 +137,4 @@ class SelectList(ASTNode):
 
         print(spacer * level+ "Columns:")
         for item in self.items:
-            item.print(spacer, level+1)
+            item.print(spacer, level)
