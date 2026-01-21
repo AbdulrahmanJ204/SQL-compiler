@@ -125,8 +125,8 @@ SELECT * from EmployeeMaster WHERE employeename LIKE 'super'
 SELECT * from EmployeeMaster WHERE employeename LIKE 'super''\\\\AZ\
 c'
 
---SELECT * from EmployeeMaster WHERE employeename LIKE 'super''\\\\AZ
---c'
+SELECT * from EmployeeMaster WHERE employeename LIKE 'super''\\\\AZ
+c'
 
 SELECT * from EmployeeMaster WHERE employeename LIKE 'sup%'
 
